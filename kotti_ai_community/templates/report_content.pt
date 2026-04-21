@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      metal:use-macro="api.macro('kotti:templates/view/master.pt')">
+
+<tal:block metal:fill-slot="content">
+<div class="report-page" style="max-width: 600px; margin: 0 auto; padding: 24px;">
+    <h1 style="margin-bottom: 8px;">Report Content</h1>
+    <p style="color: #666; margin-bottom: 24px;">Help us keep the community safe by reporting inappropriate content.</p>
+
+    <!-- Already Reported Message -->
+    <div tal:condition="already_reported" style="background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 16px; margin-bottom: 24px;">
+        <strong>You have already reported this content.</strong>
+        <p style="margin: 8px 0 0 0;">Our moderators will review your report soon.</p>
+    </div>
+
+    <!-- Success/Error Message -->
+    <div tal:condition="message" tal:attributes="style python: 'background: #d4edda; border: 1px solid #28a745; border-radius: 8px; padding: 16px; margin-bottom: 24px;' if message_type == 'success' else 'background: #f8d7da; border: 1px solid #dc3545; border-radius: 8px; padding: 16px; margin-bottom: 24px;' if message_type == 'error' else 'background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 16px; margin-bottom: 24px;'">
+        <span tal:content="message">Message</span>
+    </div>
+
+    <!-- Report Form -->
+    <form method="POST" tal:condition="not:already_reported">
+        <input type="hidden" name="csrf_token" value="${python: request.session.get('csrf_token', '')}"/>
+        
+        <!-- Content Info -->
+        <div style="background: #f8f9fa; border-radius: 8px; padding: 16px; margin-bottom: 24px;">
+            <strong>Reporting:</strong>
+            <div style="margin-top: 8px; font-size: 16px;" tal:content="content/title">Content Title</div>
+        </div>
+
+        <!-- Reason Selection -->
+        <div style="margin-bottom: 24px;">
+            <label style="display: block; font-weight: bold; margin-bottom: 8px;">Reason *</label>
+            <select name="reason" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px;">
+                <option value="">Select a reason...</option>
+                <tal:block tal:repeat="reason reasons">
+                    <option tal:attributes="value reason" tal:content="python: reasons[reason]">Reason</option>
+                </tal:block>
+            </select>
+        </div>
+
+        <!-- Details -->
+        <div style="margin-bottom: 24px;">
+            <label style="display: block; font-weight: bold; margin-bottom: 8px;">Additional Details</label>
+            <textarea name="details" rows="4" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px;" placeholder="Please provide any additional context that might help our moderators..."></textarea>
+        </div>
+
+        <!-- Submit -->
+        <div style="display: flex; gap: 12px;">
+            <button type="submit" style="background: #dc3545; color: white; padding: 12px 24px; border: none; border-radius: 8px; font-size: 16px; cursor: pointer;">
+                Submit Report
+            </button>
+            <a tal:attributes="href python: request.resource_url(context)" style="background: #6c757d; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-size: 16px;">
+                Cancel
+            </a>
+        </div>
+    </form>
+
+    <!-- Info Box -->
+    <div style="background: #e7f3ff; border-radius: 8px; padding: 16px; margin-top: 24px;">
+        <h4 style="margin: 0 0 8px 0;">What happens after I report?</h4>
+        <ul style="margin: 0; padding-left: 20px; color: #666;">
+            <li>Our moderators will review your report</li>
+            <li>If the content violates our guidelines, appropriate action will be taken</li>
+            <li>You may be contacted for additional information if needed</li>
+        </ul>
+    </div>
+</div>
+</tal:block>
+
+</html>

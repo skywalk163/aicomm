@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      metal:use-macro="api.macro('kotti:templates/view/master.pt')">
+
+<tal:block metal:fill-slot="content">
+<div class="flag-history-page" style="max-width: 800px; margin: 0 auto; padding: 24px;">
+    <h1 style="margin-bottom: 8px;">Flag History</h1>
+    <p style="color: #666; margin-bottom: 24px;">
+        Moderation history for: <strong tal:content="content/title">Content Title</strong>
+    </p>
+
+    <!-- Back Link -->
+    <div style="margin-bottom: 24px;">
+        <a tal:attributes="href python: request.resource_url(context)" style="color: #667eea; text-decoration: none;">
+            &larr; Back to content
+        </a>
+    </div>
+
+    <!-- Flags List -->
+    <div tal:condition="flags" style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+        <tal:block tal:repeat="item flags">
+            <div style="padding: 20px; border-bottom: 1px solid #eee;">
+                <!-- Status Badge -->
+                <div style="margin-bottom: 12px;">
+                    <span tal:attributes="style python: 'background: #ffc107; color: #000; padding: 4px 12px; border-radius: 16px; font-size: 12px; font-weight: bold;' if item['flag'].status == 'pending' else 'background: #28a745; color: white; padding: 4px 12px; border-radius: 16px; font-size: 12px; font-weight: bold;' if item['flag'].status == 'resolved' else 'background: #6c757d; color: white; padding: 4px 12px; border-radius: 16px; font-size: 12px; font-weight: bold;'" tal:content="python: statuses.get(item['flag'].status, item['flag'].status)">Status</span>
+                </div>
+
+                <!-- Reason -->
+                <div style="margin-bottom: 8px;">
+                    <strong>Reason:</strong>
+                    <span tal:content="python: reasons.get(item['flag'].reason, item['flag'].reason)">Reason</span>
+                </div>
+
+                <!-- Details -->
+                <div tal:condition="item/flag/details" style="margin-bottom: 8px; padding: 12px; background: #f8f9fa; border-radius: 8px;">
+                    <em tal:content="item/flag/details">Details</em>
+                </div>
+
+                <!-- Reporter Info -->
+                <div style="color: #666; font-size: 14px; margin-bottom: 8px;">
+                    Reported by <strong tal:content="item/reporter/name">User</strong>
+                    on <span tal:content="python: item['flag'].created.strftime('%Y-%m-%d %H:%M') if item['flag'].created else ''">Date</span>
+                </div>
+
+                <!-- Resolution Info -->
+                <div tal:condition="python: item['flag'].status in ('resolved', 'dismissed')" style="padding: 12px; background: #e7f3ff; border-radius: 8px; margin-top: 12px;">
+                    <div style="margin-bottom: 4px;">
+                        <strong>Action:</strong>
+                        <span tal:content="python: actions.get(item['flag'].action_taken, item['flag'].action_taken)">Action</span>
+                    </div>
+                    <div tal:condition="item/moderator" style="margin-bottom: 4px;">
+                        <strong>By:</strong>
+                        <span tal:content="item/moderator/name">Moderator</span>
+                    </div>
+                    <div tal:condition="item/flag/resolved_at">
+                        <strong>On:</strong>
+                        <span tal:content="python: item['flag'].resolved_at.strftime('%Y-%m-%d %H:%M') if item['flag'].resolved_at else ''">Date</span>
+                    </div>
+                    <div tal:condition="item/flag/moderator_notes" style="margin-top: 8px; font-style: italic;">
+                        "<span tal:content="item/flag/moderator_notes">Notes</span>"
+                    </div>
+                </div>
+            </div>
+        </tal:block>
+    </div>
+
+    <!-- Empty State -->
+    <div tal:condition="not:flags" style="text-align: center; padding: 60px 20px; background: white; border-radius: 12px;">
+        <div style="font-size: 48px; margin-bottom: 16px;">&#128203;</div>
+        <h3 style="color: #666;">No flags recorded</h3>
+        <p style="color: #999;">This content has not been reported.</p>
+    </div>
+</div>
+</tal:block>
+
+</html>

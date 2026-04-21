@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      metal:use-macro="api.macro('kotti:templates/view/master.pt')">
+<head>
+    <title metal:fill-slot="title">Resources - AI Community</title>
+</head>
+<body>
+    <div metal:fill-slot="content" class="resource-list-page">
+        <div class="page-header">
+            <h1>Resource Library</h1>
+            <p class="lead">Share and discover AI resources</p>
+        </div>
+
+        <div class="filters well">
+            <form method="GET" class="form-inline">
+                <div class="row">
+                    <div class="col-md-4">
+                        <select name="category" class="form-control">
+                            <option value="">All Categories</option>
+                            <tal:loop tal:repeat="cat categories">
+                                <option value="${cat}"
+                                        tal:attributes="selected 'selected' if filters['category'] == cat else None">
+                                    ${categories[cat]}
+                                </option>
+                            </tal:loop>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <input type="text" name="search" class="form-control"
+                               placeholder="Search resources..." value="${filters['search']}">
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 10px;">
+                    <div class="col-md-12">
+                        <button type="submit" class="btn btn-primary">Filter</button>
+                        <a href="${request.application_url}/@@add_resource_item" class="btn btn-success pull-right">
+                            Share Resource
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="resources-list">
+            <tal:repeat tal:repeat="resource resources">
+                <div class="resource-card panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            <a href="${request.resource_url(resource)}">${resource.title}</a>
+                        </h3>
+                    </div>
+                    <div class="panel-body">
+                        <p>${resource.description[:200] if resource.description else ''}</p>
+                    </div>
+                </div>
+            </tal:repeat>
+
+            <div tal:condition="not resources" class="alert alert-info">
+                No resources yet
+            </div>
+        </div>
+    </div>
+</body>
+</html>

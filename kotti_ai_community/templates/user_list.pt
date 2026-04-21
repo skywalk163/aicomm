@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      metal:use-macro="api.macro('kotti:templates/view/master.pt')">
+
+<tal:block metal:fill-slot="content">
+<div class="members-page" style="max-width: 1200px; margin: 0 auto; padding: 24px;">
+    <h1 style="margin-bottom: 24px;">Community Members</h1>
+
+    <!-- Search and Filter -->
+    <div style="background: white; border-radius: 12px; padding: 20px; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+        <form method="GET" action="" style="display: flex; gap: 16px; flex-wrap: wrap;">
+            <input type="text" name="search" tal:attributes="value search | nothing"
+                   placeholder="Search by name or bio..."
+                   style="flex: 1; min-width: 200px; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px;"/>
+
+            <select name="skill" style="padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; min-width: 200px;">
+                <option value="">All Skills</option>
+                <tal:block tal:repeat="cat skill_categories">
+                    <option tal:attributes="value cat; selected python: skill_filter == cat"
+                            tal:content="python: skill_categories[cat]">Category</option>
+                </tal:block>
+            </select>
+
+            <button type="submit" style="background: #667eea; color: white; padding: 12px 24px; border: none; border-radius: 8px; font-size: 16px; cursor: pointer;">
+                Search
+            </button>
+        </form>
+    </div>
+
+    <!-- Members Grid -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;">
+        <tal:block tal:repeat="member members">
+            <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform 0.2s;">
+                <a href="${request/application_url}/@@profile?username=${member/principal/name}" style="text-decoration: none; color: inherit;">
+                    <!-- Avatar and Name -->
+                    <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
+                        <div style="width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; font-weight: bold; overflow: hidden;">
+                            <tal:block tal:condition="member/profile/avatar_url">
+                                <img tal:attributes="src member/profile/avatar_url" style="width: 100%; height: 100%; object-fit: cover;"/>
+                            </tal:block>
+                            <tal:block tal:condition="not:member/profile/avatar_url">
+                                <span tal:content="python: (member['profile'].display_name or member['principal'].name or '?')[0].upper()">U</span>
+                            </tal:block>
+                        </div>
+                        <div>
+                            <div style="font-weight: bold; font-size: 18px;" tal:content="member/profile/display_name | member/principal/name">Name</div>
+                            <div style="color: #666; font-size: 14px;">Level ${member/profile/level} - ${member/profile/level_name}</div>
+                        </div>
+                    </div>
+
+                    <!-- Bio -->
+                    <p style="color: #666; font-size: 14px; margin: 0 0 12px 0; line-height: 1.4; height: 40px; overflow: hidden;"
+                       tal:content="python: member['profile'].bio[:100] + '...' if member['profile'].bio and len(member['profile'].bio) > 100 else (member['profile'].bio or 'No bio available')">
+                        Bio text
+                    </p>
+
+                    <!-- Skills -->
+                    <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px;">
+                        <tal:block tal:repeat="skill python: (member['profile'].skills or [])[:3]">
+                            <span style="background: #e3f2fd; color: #1976d2; padding: 2px 8px; border-radius: 12px; font-size: 12px;" tal:content="skill">Skill</span>
+                        </tal:block>
+                        <tal:block tal:condition="python: len(member['profile'].skills or []) > 3">
+                            <span style="color: #999; font-size: 12px;">+${python: len(member['profile'].skills) - 3} more</span>
+                        </tal:block>
+                    </div>
+
+                    <!-- Stats -->
+                    <div style="display: flex; gap: 16px; padding-top: 12px; border-top: 1px solid #eee; font-size: 14px; color: #666;">
+                        <span>${member/profile/ideas_count} ideas</span>
+                        <span>${member/profile/resources_count} resources</span>
+                        <span style="color: #667eea; font-weight: bold;">${member/profile/points} pts</span>
+                    </div>
+                </a>
+            </div>
+        </tal:block>
+    </div>
+
+    <!-- Empty State -->
+    <div tal:condition="not:members" style="text-align: center; padding: 60px 20px;">
+        <div style="font-size: 48px; margin-bottom: 16px;">&#128100;</div>
+        <h3 style="color: #666;">No members found</h3>
+        <p style="color: #999;">Try adjusting your search criteria</p>
+    </div>
+</div>
+</tal:block>
+
+</html>

@@ -1,0 +1,174 @@
+/* AI共创社区样式 */
+
+/* 页面通用 */
+.idea-list-page,
+.idea-view-page,
+.idea-add-page,
+.resource-list-page,
+.resource-view-page,
+.resource-add-page {
+    padding: 20px;
+}
+
+.page-header {
+    border-bottom: 2px solid #3498db;
+    margin-bottom: 30px;
+}
+
+.page-header h1 {
+    color: #2c3e50;
+}
+
+.page-header .lead {
+    color: #7f8c8d;
+}
+
+/* 筛选栏 */
+.filters.well {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    margin-bottom: 30px;
+}
+
+.filters .form-control {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+/* 卡片样式 */
+.idea-card,
+.resource-card {
+    margin-bottom: 20px;
+    border-radius: 8px;
+    transition: box-shadow 0.3s ease;
+}
+
+.idea-card:hover,
+.resource-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.idea-card .panel-heading,
+.resource-card .panel-heading {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 8px 8px 0 0;
+}
+
+.idea-card .panel-title a,
+.resource-card .panel-title a {
+    color: white;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.idea-card .panel-title a:hover,
+.resource-card .panel-title a:hover {
+    text-decoration: none;
+    color: #f0f0f0;
+}
+
+/* 标签样式 */
+.idea-meta,
+.resource-meta {
+    margin-top: 10px;
+}
+
+.idea-meta .label,
+.resource-meta .label {
+    margin-right: 5px;
+    font-size: 12px;
+    padding: 5px 10px;
+}
+
+.idea-tags .tag,
+.resource-tags .tag {
+    margin-right: 5px;
+    margin-bottom: 5px;
+    display: inline-block;
+}
+
+/* 统计信息 */
+.panel-footer .stat {
+    margin-right: 15px;
+    color: #7f8c8d;
+}
+
+.panel-footer .stat i {
+    margin-right: 5px;
+}
+
+/* 详情页侧边栏 */
+.idea-view-page .panel,
+.resource-view-page .panel {
+    margin-bottom: 20px;
+}
+
+.idea-view-page .list-unstyled li,
+.resource-view-page .list-unstyled li {
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.idea-view-page .list-unstyled li:last-child,
+.resource-view-page .list-unstyled li:last-child {
+    border-bottom: none;
+}
+
+/* 表单样式 */
+.idea-add-page .panel,
+.resource-add-page .panel {
+    margin-bottom: 20px;
+}
+
+.idea-add-page .form-group,
+.resource-add-page .form-group {
+    margin-bottom: 20px;
+}
+
+.idea-add-page textarea,
+.resource-add-page textarea {
+    resize: vertical;
+}
+
+/* 按钮样式 */
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #5a6fd6 0%, #6a4190 100%);
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    border: none;
+}
+
+.btn-success:hover {
+    background: linear-gradient(135deg, #0f8a7f 0%, #32d970 100%);
+}
+
+/* 空状态提示 */
+.alert-info {
+    text-align: center;
+    padding: 40px;
+    font-size: 16px;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .filters .col-md-3,
+    .filters .col-md-4 {
+        margin-bottom: 10px;
+    }
+    
+    .idea-card .panel-footer .pull-right,
+    .resource-card .panel-footer .pull-right {
+        display: block;
+        margin-top: 10px;
+        float: none !important;
+    }
+}

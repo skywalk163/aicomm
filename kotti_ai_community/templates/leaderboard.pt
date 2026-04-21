@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      metal:use-macro="api.macro('kotti:templates/view/master.pt')">
+
+<tal:block metal:fill-slot="content">
+<div class="leaderboard-page" style="max-width: 1000px; margin: 0 auto; padding: 24px;">
+    <h1 style="margin-bottom: 8px;">Leaderboard</h1>
+    <p style="color: #666; margin-bottom: 24px;">Top contributors in our community</p>
+
+    <!-- Period Filter -->
+    <div style="background: white; border-radius: 12px; padding: 16px; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+        <div style="display: flex; gap: 12px;">
+            <tal:block tal:define="active python: period == 'all'">
+                <a tal:condition="active" href="?period=all" style="background: #667eea; color: white; padding: 8px 20px; border-radius: 20px; text-decoration: none; font-weight: bold;">All Time</a>
+                <a tal:condition="not:active" href="?period=all" style="background: #f0f0f0; color: #666; padding: 8px 20px; border-radius: 20px; text-decoration: none;">All Time</a>
+            </tal:block>
+            <tal:block tal:define="active python: period == 'month'">
+                <a tal:condition="active" href="?period=month" style="background: #667eea; color: white; padding: 8px 20px; border-radius: 20px; text-decoration: none; font-weight: bold;">This Month</a>
+                <a tal:condition="not:active" href="?period=month" style="background: #f0f0f0; color: #666; padding: 8px 20px; border-radius: 20px; text-decoration: none;">This Month</a>
+            </tal:block>
+            <tal:block tal:define="active python: period == 'week'">
+                <a tal:condition="active" href="?period=week" style="background: #667eea; color: white; padding: 8px 20px; border-radius: 20px; text-decoration: none; font-weight: bold;">This Week</a>
+                <a tal:condition="not:active" href="?period=week" style="background: #f0f0f0; color: #666; padding: 8px 20px; border-radius: 20px; text-decoration: none;">This Week</a>
+            </tal:block>
+        </div>
+    </div>
+
+    <!-- Your Rank (if logged in) -->
+    <div tal:condition="user_rank" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; padding: 20px; margin-bottom: 24px; color: white;">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+            <div>
+                <div style="font-size: 14px; opacity: 0.9;">Your Current Rank</div>
+                <div style="font-size: 32px; font-weight: bold;">#${user_rank}</div>
+            </div>
+            <div style="text-align: right;">
+                <div style="font-size: 14px; opacity: 0.9;">Keep contributing to climb up!</div>
+                <a tal:attributes="href python: request.application_url + '/@@profile'" style="color: white; text-decoration: underline;">View your profile</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top 3 Podium -->
+    <tal:block tal:condition="python: len(leaderboard) >= 3">
+    <div style="display: flex; justify-content: center; gap: 16px; margin-bottom: 32px;">
+        <!-- 2nd Place -->
+        <tal:block tal:define="entry python: leaderboard[1]">
+        <div style="text-align: center; padding-top: 40px;">
+            <div style="background: linear-gradient(135deg, #c0c0c0 0%, #a0a0a0 100%); border-radius: 12px; padding: 20px; width: 160px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                <div style="font-size: 24px; font-weight: bold; color: white; margin-bottom: 8px;">2nd</div>
+                <div style="width: 60px; height: 60px; border-radius: 50%; background: white; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; color: #666; overflow: hidden;">
+                    <tal:block tal:condition="entry/profile/avatar_url">
+                        <img tal:attributes="src entry/profile/avatar_url" style="width: 100%; height: 100%; object-fit: cover;"/>
+                    </tal:block>
+                    <tal:block tal:condition="not:entry/profile/avatar_url">
+                        <span tal:content="python: (entry['profile'].display_name or entry['principal'].name or '?')[0].upper()">U</span>
+                    </tal:block>
+                </div>
+                <a tal:attributes="href python: request.application_url + '/@@profile?username=' + entry['principal'].name" style="color: white; text-decoration: none; font-weight: bold;">
+                    <div tal:content="python: entry['profile'].display_name or entry['principal'].name" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Name</div>
+                </a>
+                <div style="font-size: 14px; opacity: 0.9; margin-top: 4px;" tal:content="python: str(entry['profile'].points) + ' pts'">0 pts</div>
+            </div>
+        </div>
+        </tal:block>
+
+        <!-- 1st Place -->
+        <tal:block tal:define="entry python: leaderboard[0]">
+        <div style="text-align: center;">
+            <div style="background: linear-gradient(135deg, #ffd700 0%, #ffb800 100%); border-radius: 12px; padding: 24px; width: 180px; box-shadow: 0 6px 20px rgba(255, 184, 0, 0.4);">
+                <div style="font-size: 28px; font-weight: bold; color: white; margin-bottom: 8px;">1st</div>
+                <div style="width: 70px; height: 70px; border-radius: 50%; background: white; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: bold; color: #666; overflow: hidden;">
+                    <tal:block tal:condition="entry/profile/avatar_url">
+                        <img tal:attributes="src entry/profile/avatar_url" style="width: 100%; height: 100%; object-fit: cover;"/>
+                    </tal:block>
+                    <tal:block tal:condition="not:entry/profile/avatar_url">
+                        <span tal:content="python: (entry['profile'].display_name or entry['principal'].name or '?')[0].upper()">U</span>
+                    </tal:block>
+                </div>
+                <a tal:attributes="href python: request.application_url + '/@@profile?username=' + entry['principal'].name" style="color: white; text-decoration: none; font-weight: bold;">
+                    <div tal:content="python: entry['profile'].display_name or entry['principal'].name" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Name</div>
+                </a>
+                <div style="font-size: 14px; opacity: 0.9; margin-top: 4px;" tal:content="python: str(entry['profile'].points) + ' pts'">0 pts</div>
+            </div>
+        </div>
+        </tal:block>
+
+        <!-- 3rd Place -->
+        <tal:block tal:define="entry python: leaderboard[2]">
+        <div style="text-align: center; padding-top: 60px;">
+            <div style="background: linear-gradient(135deg, #cd7f32 0%, #a0522d 100%); border-radius: 12px; padding: 16px; width: 140px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                <div style="font-size: 20px; font-weight: bold; color: white; margin-bottom: 8px;">3rd</div>
+                <div style="width: 50px; height: 50px; border-radius: 50%; background: white; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: bold; color: #666; overflow: hidden;">
+                    <tal:block tal:condition="entry/profile/avatar_url">
+                        <img tal:attributes="src entry/profile/avatar_url" style="width: 100%; height: 100%; object-fit: cover;"/>
+                    </tal:block>
+                    <tal:block tal:condition="not:entry/profile/avatar_url">
+                        <span tal:content="python: (entry['profile'].display_name or entry['principal'].name or '?')[0].upper()">U</span>
+                    </tal:block>
+                </div>
+                <a tal:attributes="href python: request.application_url + '/@@profile?username=' + entry['principal'].name" style="color: white; text-decoration: none; font-weight: bold;">
+                    <div tal:content="python: entry['profile'].display_name or entry['principal'].name" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Name</div>
+                </a>
+                <div style="font-size: 12px; opacity: 0.9; margin-top: 4px;" tal:content="python: str(entry['profile'].points) + ' pts'">0 pts</div>
+            </div>
+        </div>
+        </tal:block>
+    </div>
+    </tal:block>
+
+    <!-- Full Leaderboard List -->
+    <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+        <tal:block tal:repeat="entry python: leaderboard[3:] if len(leaderboard) > 3 else leaderboard">
+            <tal:block tal:define="is_user python: entry['rank'] == user_rank; profile_url python: request.application_url + '/@@profile?username=' + entry['principal'].name">
+            <!-- Regular row -->
+            <a tal:condition="not:is_user" tal:attributes="href profile_url"
+               style="display: flex; align-items: center; padding: 16px 20px; text-decoration: none; color: inherit; border-bottom: 1px solid #f0f0f0;">
+                
+                <!-- Rank -->
+                <div style="width: 40px; font-weight: bold; color: #666; font-size: 18px;">
+                    <span tal:content="entry/rank">1</span>
+                </div>
+
+                <!-- Avatar -->
+                <div style="width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 18px; font-weight: bold; margin-right: 16px; overflow: hidden;">
+                    <tal:block tal:condition="entry/profile/avatar_url">
+                        <img tal:attributes="src entry/profile/avatar_url" style="width: 100%; height: 100%; object-fit: cover;"/>
+                    </tal:block>
+                    <tal:block tal:condition="not:entry/profile/avatar_url">
+                        <span tal:content="python: (entry['profile'].display_name or entry['principal'].name or '?')[0].upper()">U</span>
+                    </tal:block>
+                </div>
+
+                <!-- Info -->
+                <div style="flex: 1;">
+                    <div style="font-weight: bold; font-size: 16px;" tal:content="python: entry['profile'].display_name or entry['principal'].name">Name</div>
+                    <div style="color: #666; font-size: 14px;">Level <span tal:replace="entry/profile/level">1</span> - <span tal:replace="entry/profile/level_name">Newcomer</span></div>
+                </div>
+
+                <!-- Stats -->
+                <div style="display: flex; gap: 24px; text-align: center;">
+                    <div>
+                        <div style="font-weight: bold; color: #333;" tal:content="entry/profile/ideas_count">0</div>
+                        <div style="font-size: 12px; color: #999;">ideas</div>
+                    </div>
+                    <div>
+                        <div style="font-weight: bold; color: #333;" tal:content="entry/profile/resources_count">0</div>
+                        <div style="font-size: 12px; color: #999;">resources</div>
+                    </div>
+                    <div>
+                        <div style="font-weight: bold; color: #667eea; font-size: 18px;" tal:content="entry/profile/points">0</div>
+                        <div style="font-size: 12px; color: #999;">points</div>
+                    </div>
+                </div>
+            </a>
+            <!-- Highlighted row for current user -->
+            <a tal:condition="is_user" tal:attributes="href profile_url"
+               style="display: flex; align-items: center; padding: 16px 20px; text-decoration: none; color: inherit; border-bottom: 1px solid #f0f0f0; background: #f8f9ff;">
+                
+                <!-- Rank -->
+                <div style="width: 40px; font-weight: bold; color: #666; font-size: 18px;">
+                    <span tal:content="entry/rank">1</span>
+                </div>
+
+                <!-- Avatar -->
+                <div style="width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 18px; font-weight: bold; margin-right: 16px; overflow: hidden;">
+                    <tal:block tal:condition="entry/profile/avatar_url">
+                        <img tal:attributes="src entry/profile/avatar_url" style="width: 100%; height: 100%; object-fit: cover;"/>
+                    </tal:block>
+                    <tal:block tal:condition="not:entry/profile/avatar_url">
+                        <span tal:content="python: (entry['profile'].display_name or entry['principal'].name or '?')[0].upper()">U</span>
+                    </tal:block>
+                </div>
+
+                <!-- Info -->
+                <div style="flex: 1;">
+                    <div style="font-weight: bold; font-size: 16px;" tal:content="python: entry['profile'].display_name or entry['principal'].name">Name</div>
+                    <div style="color: #666; font-size: 14px;">Level <span tal:replace="entry/profile/level">1</span> - <span tal:replace="entry/profile/level_name">Newcomer</span></div>
+                </div>
+
+                <!-- Stats -->
+                <div style="display: flex; gap: 24px; text-align: center;">
+                    <div>
+                        <div style="font-weight: bold; color: #333;" tal:content="entry/profile/ideas_count">0</div>
+                        <div style="font-size: 12px; color: #999;">ideas</div>
+                    </div>
+                    <div>
+                        <div style="font-weight: bold; color: #333;" tal:content="entry/profile/resources_count">0</div>
+                        <div style="font-size: 12px; color: #999;">resources</div>
+                    </div>
+                    <div>
+                        <div style="font-weight: bold; color: #667eea; font-size: 18px;" tal:content="entry/profile/points">0</div>
+                        <div style="font-size: 12px; color: #999;">points</div>
+                    </div>
+                </div>
+            </a>
+            </tal:block>
+        </tal:block>
+    </div>
+
+    <!-- Empty State -->
+    <div tal:condition="not:leaderboard" style="text-align: center; padding: 60px 20px; background: white; border-radius: 12px;">
+        <div style="font-size: 48px; margin-bottom: 16px;">&#127942;</div>
+        <h3 style="color: #666;">No users yet</h3>
+        <p style="color: #999;">Be the first to contribute and top the leaderboard!</p>
+    </div>
+</div>
+</tal:block>
+
+</html>

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      metal:use-macro="api.macro('kotti:templates/view/master.pt')">
+<head>
+    <title metal:fill-slot="title">Smart Matching - AI Community</title>
+</head>
+<body>
+    <div metal:fill-slot="content" class="match-page">
+        <div class="container">
+            <div class="page-header">
+                <h1>Smart Matching</h1>
+                <p class="lead">Find matching ideas and resources by tags</p>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Select Tags</h3>
+                        </div>
+                        <div class="panel-body">
+                            <input type="text" id="tag-input" class="form-control" placeholder="Enter tag and press Enter">
+                            <div id="selected-tags" style="margin-top: 10px;"></div>
+                            
+                            <div style="margin-top: 15px;">
+                                <label>Match Type:</label>
+                                <div class="radio">
+                                    <label><input type="radio" name="match-type" value="idea" checked> Find Ideas</label>
+                                </div>
+                                <div class="radio">
+                                    <label><input type="radio" name="match-type" value="resource"> Find Resources</label>
+                                </div>
+                            </div>
+
+                            <button class="btn btn-primary btn-block" onclick="doMatch()" style="margin-top: 15px;">Start Matching</button>
+                        </div>
+                    </div>
+
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Popular Tags</h3>
+                        </div>
+                        <div class="panel-body">
+                            <tal:repeat tal:repeat="tag_count popular_tags">
+                                <span class="label label-default" style="margin: 2px; cursor: pointer;"
+                                      onclick="addTag('${tag_count[0]}')">${tag_count[0]} (${tag_count[1]})</span>
+                            </tal:repeat>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-8">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Results</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div id="match-results">
+                                <p class="text-muted">Select tags and click "Start Matching" to see results</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var selectedTags = [];
+        
+        function addTag(tag) {
+            if (selectedTags.indexOf(tag) === -1) {
+                selectedTags.push(tag);
+                renderTags();
+            }
+        }
+        
+        function renderTags() {
+            var container = document.getElementById('selected-tags');
+            container.innerHTML = selectedTags.map(function(t) {
+                return '<span class="label label-primary" style="margin: 2px;">' + t + 
+                       ' <span style="cursor:pointer" onclick="removeTag(\'' + t + '\')">x</span></span>';
+            }).join(' ');
+        }
+        
+        function removeTag(tag) {
+            selectedTags = selectedTags.filter(function(t) { return t !== tag; });
+            renderTags();
+        }
+        
+        async function doMatch() {
+            if (selectedTags.length === 0) {
+                alert('Please select at least one tag');
+                return;
+            }
+            var type = document.querySelector('input[name="match-type"]:checked').value;
+            var resultsDiv = document.getElementById('match-results');
+            resultsDiv.innerHTML = '<p>Loading...</p>';
+            
+            try {
+                var resp = await fetch('/@@api/match/by-tags', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({tags: selectedTags, type: type})
+                });
+                var data = await resp.json();
+                
+                if (data.success && data.results.length > 0) {
+                    resultsDiv.innerHTML = data.results.map(function(r) {
+                        return '<div class="panel panel-default"><div class="panel-heading">' +
+                               '<a href="' + r.url + '">' + r.title + '</a>' +
+                               ' <span class="pull-right">' + r.match_score + '% match</span></div>' +
+                               '<div class="panel-body">' + (r.description || '') + '</div></div>';
+                    }).join('');
+                } else {
+                    resultsDiv.innerHTML = '<p class="text-muted">No results found</p>';
+                }
+            } catch (e) {
+                resultsDiv.innerHTML = '<p style="color:red">Error: ' + e.message + '</p>';
+            }
+        }
+        
+        document.getElementById('tag-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                var tag = this.value.trim();
+                if (tag) {
+                    addTag(tag);
+                    this.value = '';
+                }
+            }
+        });
+    </script>
+</body>
+</html>

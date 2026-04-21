@@ -1,0 +1,7 @@
+include *.rst
+include *.ini
+recursive-include kotti_ai_community *.pt
+recursive-include kotti_ai_community *.py
+recursive-include kotti_ai_community/fanstatic *.css
+recursive-include kotti_ai_community/fanstatic *.js
+recursive-include kotti_ai_community/alembic *.py

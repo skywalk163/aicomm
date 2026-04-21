@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      metal:use-macro="api.macro('kotti:templates/master.pt')">
+<head>
+    <title metal:fill-slot="title">${context.title} - AI共创</title>
+</head>
+<body>
+    <div metal:fill-slot="content" class="idea-view-page">
+        <div class="page-header">
+            <h1>${context.title}</h1>
+            <div class="idea-meta">
+                <span class="label label-info">${context.get_category_display()}</span>
+                <span class="label label-${'success' if context.status == 'recruiting' else 'default'}">
+                    ${context.get_status_display()}
+                </span>
+                <span class="label label-warning">${context.get_difficulty_display()}</span>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Description</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div tal:content="context/description | python: ''"></div>
+                    </div>
+                </div>
+
+                <!-- Needed Resources -->
+                <div class="panel panel-default" tal:condition="context.needed_resources">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Needed Resources</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div tal:content="context/needed_resources"></div>
+                    </div>
+                </div>
+
+                <!-- Expected Outcome -->
+                <div class="panel panel-default" tal:condition="context.expected_outcome">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Expected Outcome</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div tal:content="context/expected_outcome"></div>
+                    </div>
+                </div>
+
+                <!-- AI Suggestions -->
+                <div class="panel panel-info" tal:condition="context.ai_suggestions">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">AI Suggestions</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div tal:content="context/ai_suggestions"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <!-- 侧边栏 -->
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">点子信息</h3>
+                    </div>
+                    <div class="panel-body">
+                        <ul class="list-unstyled">
+                            <li><strong>发布者：</strong>${context.creator.name}</li>
+                            <li><strong>发布时间：</strong>${context.creation_date.strftime('%Y-%m-%d %H:%M')}</li>
+                            <li><strong>预计时间：</strong>${context.estimated_days} 天</li>
+                            <li><strong>浏览：</strong>${context.views_count}</li>
+                            <li><strong>点赞：</strong>${context.likes_count}</li>
+                            <li><strong>关注：</strong>${context.followers_count}</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- 标签 -->
+                <div class="panel panel-default" tal:condition="context.tags">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">标签</h3>
+                    </div>
+                    <div class="panel-body">
+                        <tal:repeat tal:repeat="tag context.tags">
+                            <span class="tag label label-default">${tag}</span>
+                        </tal:repeat>
+                    </div>
+                </div>
+
+                <!-- 操作按钮 -->
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <button class="btn btn-primary btn-block">关注这个点子</button>
+                        <button class="btn btn-default btn-block">点赞</button>
+                        <a href="${request.resource_url(context, 'edit')}"
+                           class="btn btn-warning btn-block"
+                           tal:condition="api.has_permission('edit')">
+                            编辑
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

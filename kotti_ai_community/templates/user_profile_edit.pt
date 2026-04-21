@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      metal:use-macro="api.macro('kotti:templates/view/master.pt')">
+
+<tal:block metal:fill-slot="content">
+<div class="edit-profile-page" style="max-width: 800px; margin: 0 auto; padding: 24px;">
+    <h1 style="margin-bottom: 24px;">Edit Profile</h1>
+
+    <!-- Message -->
+    <div tal:condition="message" style="padding: 16px; border-radius: 8px; margin-bottom: 24px;"
+         tal:attributes="style python: 'background: #d4edda; color: #155724;' if message_type == 'success' else 'background: #fff3cd; color: #856404;'">
+        <span tal:content="message">Message</span>
+    </div>
+
+    <form method="POST" action="" style="background: white; border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+        <!-- Display Name -->
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; font-weight: bold; margin-bottom: 8px;">Display Name</label>
+            <input type="text" name="display_name" tal:attributes="value profile/display_name | nothing"
+                   style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px;"/>
+        </div>
+
+        <!-- Avatar URL -->
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; font-weight: bold; margin-bottom: 8px;">Avatar URL</label>
+            <input type="text" name="avatar_url" tal:attributes="value profile/avatar_url | nothing"
+                   placeholder="https://example.com/avatar.jpg"
+                   style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px;"/>
+            <p style="color: #666; font-size: 14px; margin-top: 4px;">Enter a URL to your avatar image</p>
+        </div>
+
+        <!-- Bio -->
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; font-weight: bold; margin-bottom: 8px;">Bio</label>
+            <textarea name="bio" rows="4"
+                      style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; resize: vertical;"
+                      tal:content="profile/bio | nothing">Bio text</textarea>
+        </div>
+
+        <!-- Location -->
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; font-weight: bold; margin-bottom: 8px;">Location</label>
+            <input type="text" name="location" tal:attributes="value profile/location | nothing"
+                   placeholder="City, Country"
+                   style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px;"/>
+        </div>
+
+        <!-- Website -->
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; font-weight: bold; margin-bottom: 8px;">Website</label>
+            <input type="text" name="website" tal:attributes="value profile/website | nothing"
+                   placeholder="https://yourwebsite.com"
+                   style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px;"/>
+        </div>
+
+        <!-- Skills -->
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; font-weight: bold; margin-bottom: 8px;">Skills</label>
+            <input type="text" name="skills"
+                   tal:attributes="value python: ', '.join(profile.skills or [])"
+                   placeholder="Python, Machine Learning, NLP (comma separated)"
+                   style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px;"/>
+            <p style="color: #666; font-size: 14px; margin-top: 4px;">Enter skills separated by commas</p>
+        </div>
+
+        <!-- Interests -->
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; font-weight: bold; margin-bottom: 8px;">Interests</label>
+            <input type="text" name="interests"
+                   tal:attributes="value python: ', '.join(profile.interests or [])"
+                   placeholder="AI Research, Open Source, Startups (comma separated)"
+                   style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px;"/>
+            <p style="color: #666; font-size: 14px; margin-top: 4px;">Enter interests separated by commas</p>
+        </div>
+
+        <!-- Social Links -->
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; font-weight: bold; margin-bottom: 16px;">Social Links</label>
+
+            <div style="display: grid; grid-template-columns: 100px 1fr; gap: 12px; margin-bottom: 12px;">
+                <label style="display: flex; align-items: center;">GitHub:</label>
+                <input type="text" name="github"
+                       tal:attributes="value python: profile.social_links and profile.social_links.get('github', '') or ''"
+                       placeholder="username"
+                       style="padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px;"/>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 100px 1fr; gap: 12px; margin-bottom: 12px;">
+                <label style="display: flex; align-items: center;">Twitter:</label>
+                <input type="text" name="twitter"
+                       tal:attributes="value python: profile.social_links and profile.social_links.get('twitter', '') or ''"
+                       placeholder="username (without @)"
+                       style="padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px;"/>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 100px 1fr; gap: 12px; margin-bottom: 12px;">
+                <label style="display: flex; align-items: center;">LinkedIn:</label>
+                <input type="text" name="linkedin"
+                       tal:attributes="value python: profile.social_links and profile.social_links.get('linkedin', '') or ''"
+                       placeholder="profile-name"
+                       style="padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px;"/>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 100px 1fr; gap: 12px;">
+                <label style="display: flex; align-items: center;">WeChat:</label>
+                <input type="text" name="wechat"
+                       tal:attributes="value python: profile.social_links and profile.social_links.get('wechat', '') or ''"
+                       placeholder="WeChat ID"
+                       style="padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px;"/>
+            </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div style="margin-top: 24px;">
+            <button type="submit" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 14px 32px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer;">
+                Save Changes
+            </button>
+            <a href="${request/application_url}/@@profile" style="margin-left: 16px; color: #666;">Cancel</a>
+        </div>
+    </form>
+</div>
+</tal:block>
+
+</html>

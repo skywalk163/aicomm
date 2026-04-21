@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      metal:use-macro="api.macro('kotti:templates/master.pt')">
+<head>
+    <title metal:fill-slot="title">${context.title} - AI共创</title>
+</head>
+<body>
+    <div metal:fill-slot="content" class="resource-view-page">
+        <div class="page-header">
+            <h1>${context.title}</h1>
+            <div class="resource-meta">
+                <span class="label label-primary">${context.get_category_display()}</span>
+                <span class="label label-${'success' if context.access_type == 'free' else 'warning'}">
+                    ${context.get_access_type_display()}
+                </span>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8">
+                <!-- 详细描述 -->
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">资源描述</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div tal:content="structure context.description"></div>
+                    </div>
+                </div>
+
+                <!-- 资源链接 -->
+                <div class="panel panel-default" tal:condition="context.url">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">资源链接</h3>
+                    </div>
+                    <div class="panel-body">
+                        <a href="${context.url}" target="_blank" class="btn btn-primary">
+                            访问资源 <i class="glyphicon glyphicon-new-window"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 使用说明 -->
+                <div class="panel panel-default" tal:condition="context.usage_guide">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">使用说明</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div tal:content="structure context.usage_guide"></div>
+                    </div>
+                </div>
+
+                <!-- 限制条件 -->
+                <div class="panel panel-warning" tal:condition="context.limitations">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">限制条件</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div tal:content="structure context.limitations"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <!-- 侧边栏 -->
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">资源信息</h3>
+                    </div>
+                    <div class="panel-body">
+                        <ul class="list-unstyled">
+                            <li><strong>提供者：</strong>${context.creator.name}</li>
+                            <li><strong>发布时间：</strong>${context.creation_date.strftime('%Y-%m-%d %H:%M')}</li>
+                            <li><strong>浏览：</strong>${context.views_count}</li>
+                            <li><strong>点赞：</strong>${context.likes_count}</li>
+                            <li><strong>被引用：</strong>${context.references_count}</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- 标签 -->
+                <div class="panel panel-default" tal:condition="context.tags">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">标签</h3>
+                    </div>
+                    <div class="panel-body">
+                        <tal:repeat tal:repeat="tag context.tags">
+                            <span class="tag label label-default">${tag}</span>
+                        </tal:repeat>
+                    </div>
+                </div>
+
+                <!-- 操作按钮 -->
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <button class="btn btn-primary btn-block">收藏资源</button>
+                        <button class="btn btn-default btn-block">点赞</button>
+                        <a href="${request.resource_url(context, 'edit')}"
+                           class="btn btn-warning btn-block"
+                           tal:condition="api.has_permission('edit')">
+                            编辑
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      metal:use-macro="api.macro('kotti:templates/view/master.pt')">
+
+<tal:block metal:fill-slot="content">
+<div class="user-profile-page">
+    <!-- Profile Header -->
+    <div class="profile-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px; border-radius: 12px; margin-bottom: 24px; color: white;">
+        <div style="display: flex; align-items: center; gap: 24px;">
+            <!-- Avatar -->
+            <div style="width: 120px; height: 120px; border-radius: 50%; background: white; display: flex; align-items: center; justify-content: center; font-size: 48px; color: #667eea; overflow: hidden;">
+                <tal:block tal:condition="safe_avatar_url">
+                    <img tal:attributes="src safe_avatar_url" style="width: 100%; height: 100%; object-fit: cover;"/>
+                </tal:block>
+                <tal:block tal:condition="not:safe_avatar_url">
+                    <span tal:content="python: (profile.display_name or principal.name or '?')[0].upper()">U</span>
+                </tal:block>
+            </div>
+
+            <!-- User Info -->
+            <div>
+                <h1 style="margin: 0 0 8px 0; font-size: 32px;" tal:content="profile/display_name | principal/name">Username</h1>
+                <p style="margin: 0 0 12px 0; opacity: 0.9;" tal:content="python: '@' + principal.name">@username</p>
+
+                <!-- Level Badge -->
+                <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 20px;">
+                    <span style="font-weight: bold;">Level ${profile/level}</span>
+                    <span tal:content="profile/level_name">Contributor</span>
+                    <span style="opacity: 0.8;">| ${profile/points} points</span>
+                </div>
+            </div>
+
+            <!-- Edit Button -->
+            <div style="margin-left: auto;" tal:condition="is_owner">
+                <a href="${request/application_url}/@@edit-profile" class="btn" style="background: white; color: #667eea; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold;">
+                    Edit Profile
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 300px 1fr; gap: 24px;">
+        <!-- Left Sidebar -->
+        <div>
+            <!-- Bio Card -->
+            <div style="background: white; border-radius: 12px; padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                <h3 style="margin: 0 0 12px 0; color: #333;">About</h3>
+                <p tal:content="profile/bio | python: 'No bio yet.'" style="color: #666; margin: 0;">Bio text</p>
+
+                <div style="margin-top: 16px;" tal:condition="profile/location">
+                    <strong>Location:</strong> <span tal:replace="profile/location"/>
+                </div>
+
+                <div style="margin-top: 8px;" tal:condition="safe_website">
+                    <strong>Website:</strong>
+                    <a tal:attributes="href safe_website" target="_blank" rel="noopener noreferrer" tal:content="safe_website">Link</a>
+                </div>
+            </div>
+
+            <!-- Skills Card -->
+            <div style="background: white; border-radius: 12px; padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                <h3 style="margin: 0 0 12px 0; color: #333;">Skills</h3>
+                <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                    <tal:block tal:repeat="skill profile/skills | python: []">
+                        <span style="background: #e3f2fd; color: #1976d2; padding: 4px 12px; border-radius: 16px; font-size: 14px;" tal:content="skill">Skill</span>
+                    </tal:block>
+                </div>
+                <p tal:condition="not:profile/skills" style="color: #999; margin: 0;">No skills listed</p>
+            </div>
+
+            <!-- Interests Card -->
+            <div style="background: white; border-radius: 12px; padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                <h3 style="margin: 0 0 12px 0; color: #333;">Interests</h3>
+                <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                    <tal:block tal:repeat="interest profile/interests | python: []">
+                        <span style="background: #f3e5f5; color: #7b1fa2; padding: 4px 12px; border-radius: 16px; font-size: 14px;" tal:content="interest">Interest</span>
+                    </tal:block>
+                </div>
+                <p tal:condition="not:profile/interests" style="color: #999; margin: 0;">No interests listed</p>
+            </div>
+
+            <!-- Social Links Card -->
+            <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                <h3 style="margin: 0 0 12px 0; color: #333;">Social Links</h3>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <tal:block tal:condition="python: safe_social_links.get('github')">
+                        <a tal:attributes="href python: safe_social_links.get('github')" target="_blank" rel="noopener noreferrer" style="color: #333;">
+                            GitHub
+                        </a>
+                    </tal:block>
+                    <tal:block tal:condition="python: safe_social_links.get('twitter')">
+                        <a tal:attributes="href python: safe_social_links.get('twitter')" target="_blank" rel="noopener noreferrer" style="color: #1da1f2;">
+                            Twitter
+                        </a>
+                    </tal:block>
+                    <tal:block tal:condition="python: safe_social_links.get('linkedin')">
+                        <a tal:attributes="href python: safe_social_links.get('linkedin')" target="_blank" rel="noopener noreferrer" style="color: #0077b5;">
+                            LinkedIn
+                        </a>
+                    </tal:block>
+                    <tal:block tal:condition="python: safe_social_links.get('wechat')">
+                        <span style="color: #07c160;">WeChat: <span tal:replace="python: safe_social_links.get('wechat')"/></span>
+                    </tal:block>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div>
+            <!-- Stats Cards -->
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px;">
+                <div style="background: white; border-radius: 12px; padding: 20px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    <div style="font-size: 36px; font-weight: bold; color: #667eea;" tal:content="profile/ideas_count | python: 0">0</div>
+                    <div style="color: #666;">Ideas</div>
+                </div>
+                <div style="background: white; border-radius: 12px; padding: 20px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    <div style="font-size: 36px; font-weight: bold; color: #667eea;" tal:content="profile/resources_count | python: 0">0</div>
+                    <div style="color: #666;">Resources</div>
+                </div>
+                <div style="background: white; border-radius: 12px; padding: 20px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    <div style="font-size: 36px; font-weight: bold; color: #667eea;" tal:content="profile/projects_count | python: 0">0</div>
+                    <div style="color: #666;">Projects</div>
+                </div>
+            </div>
+
+            <!-- Badges -->
+            <div style="background: white; border-radius: 12px; padding: 20px; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                <h3 style="margin: 0 0 16px 0; color: #333;">Badges</h3>
+                <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+                    <tal:block tal:repeat="badge profile/badges | python: []">
+                        <div style="text-align: center;">
+                            <div style="width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #ffd700, #ff8c00); display: flex; align-items: center; justify-content: center; color: white; font-size: 24px;">
+                                &#9733;
+                            </div>
+                            <div style="font-size: 12px; margin-top: 4px;" tal:content="badge/name">Badge</div>
+                        </div>
+                    </tal:block>
+                </div>
+                <p tal:condition="not:profile/badges" style="color: #999; margin: 0;">No badges earned yet</p>
+            </div>
+
+            <!-- User's Ideas -->
+            <div style="background: white; border-radius: 12px; padding: 20px; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                <h3 style="margin: 0 0 16px 0; color: #333;">Recent Ideas</h3>
+                <tal:block tal:condition="ideas">
+                    <tal:block tal:repeat="idea ideas">
+                        <div style="padding: 12px 0; border-bottom: 1px solid #eee;">
+                            <a href="${request/application_url}${idea/path}" style="font-weight: bold; color: #333; text-decoration: none;" tal:content="idea/title">Idea Title</a>
+                            <div style="color: #666; font-size: 14px; margin-top: 4px;">
+                                <span tal:content="idea/get_status_display">Status</span> |
+                                <span tal:content="idea/get_category_display">Category</span> |
+                                ${idea/views_count} views
+                            </div>
+                        </div>
+                    </tal:block>
+                </tal:block>
+                <p tal:condition="not:ideas" style="color: #999; margin: 0;">No ideas yet</p>
+            </div>
+
+            <!-- User's Resources -->
+            <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                <h3 style="margin: 0 0 16px 0; color: #333;">Recent Resources</h3>
+                <tal:block tal:condition="resources">
+                    <tal:block tal:repeat="resource resources">
+                        <div style="padding: 12px 0; border-bottom: 1px solid #eee;">
+                            <a href="${request/application_url}${resource/path}" style="font-weight: bold; color: #333; text-decoration: none;" tal:content="resource/title">Resource Title</a>
+                            <div style="color: #666; font-size: 14px; margin-top: 4px;">
+                                <span tal:content="resource/get_category_display">Category</span> |
+                                <span tal:content="resource/get_access_type_display">Access</span> |
+                                ${resource/views_count} views
+                            </div>
+                        </div>
+                    </tal:block>
+                </tal:block>
+                <p tal:condition="not:resources" style="color: #999; margin: 0;">No resources yet</p>
+            </div>
+        </div>
+    </div>
+</div>
+</tal:block>
+
+</html>

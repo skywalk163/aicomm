@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      metal:use-macro="api.macro('kotti:templates/view/master.pt')">
+
+<tal:block metal:fill-slot="content">
+<div class="project-add-page" style="max-width: 800px; margin: 0 auto; padding: 24px;">
+    <h1 style="margin-bottom: 24px;">Create New Project</h1>
+
+    <!-- From Idea Notice -->
+    <div tal:condition="idea" style="background: #e3f2fd; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
+        <h3 style="margin: 0 0 8px 0; color: #1976d2;">Creating from Idea</h3>
+        <p style="margin: 0; color: #666;">
+            This project is based on the idea: <strong tal:content="idea/title">Idea Title</strong>
+        </p>
+    </div>
+
+    <form method="POST" action="" style="background: white; border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+        <!-- Title -->
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; font-weight: bold; margin-bottom: 8px;">Project Title *</label>
+            <input type="text" name="title" required
+                   tal:attributes="value idea/title | nothing"
+                   placeholder="Enter project title"
+                   style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px;"/>
+        </div>
+
+        <!-- Description -->
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; font-weight: bold; margin-bottom: 8px;">Description</label>
+            <textarea name="description" rows="5"
+                      placeholder="Describe your project goals, approach, and expected outcomes..."
+                      style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; resize: vertical;"
+                      tal:content="idea/description | nothing">Description</textarea>
+        </div>
+
+        <!-- Status -->
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; font-weight: bold; margin-bottom: 8px;">Status</label>
+            <select name="status" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px;">
+                <tal:block tal:repeat="s python: ['planning', 'recruiting', 'in_progress']">
+                    <option tal:attributes="value s" tal:content="python: statuses.get(s, s)">Status</option>
+                </tal:block>
+            </select>
+        </div>
+
+        <!-- Visibility -->
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; font-weight: bold; margin-bottom: 8px;">Visibility</label>
+            <select name="visibility" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px;">
+                <tal:block tal:repeat="v python: ['public', 'private', 'invite_only']">
+                    <option tal:attributes="value v; selected python: v == 'public'" tal:content="python: visibilities.get(v, v)">Visibility</option>
+                </tal:block>
+            </select>
+        </div>
+
+        <!-- Tags -->
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; font-weight: bold; margin-bottom: 8px;">Tags</label>
+            <input type="text" name="tags"
+                   tal:attributes="value python: ', '.join(idea.tags) if idea and idea.tags else ''"
+                   placeholder="AI, Machine Learning, Python (comma separated)"
+                   style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px;"/>
+            <p style="color: #666; font-size: 14px; margin-top: 4px;">Enter tags separated by commas</p>
+        </div>
+
+        <!-- Repository URL -->
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; font-weight: bold; margin-bottom: 8px;">Repository URL</label>
+            <input type="text" name="repo_url"
+                   placeholder="https://github.com/username/repo"
+                   style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px;"/>
+        </div>
+
+        <!-- Demo URL -->
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; font-weight: bold; margin-bottom: 8px;">Demo URL</label>
+            <input type="text" name="demo_url"
+                   placeholder="https://demo.example.com"
+                   style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px;"/>
+        </div>
+
+        <!-- Hidden idea_id -->
+        <input type="hidden" name="idea_id" tal:attributes="value python: idea.id if idea else ''"/>
+
+        <!-- Submit -->
+        <div style="margin-top: 24px;">
+            <button type="submit" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 14px 32px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer;">
+                Create Project
+            </button>
+            <a href="${request/application_url}/@@projects" style="margin-left: 16px; color: #666;">Cancel</a>
+        </div>
+    </form>
+</div>
+</tal:block>
+
+</html>

@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      metal:use-macro="api.macro('kotti:templates/master.pt')">
+<head>
+    <title metal:fill-slot="title">发布点子 - AI共创</title>
+</head>
+<body>
+    <div metal:fill-slot="content" class="idea-add-page">
+        <div class="page-header">
+            <h1>发布点子</h1>
+            <p class="lead">分享你的 AI 点子，寻找志同道合的伙伴</p>
+        </div>
+
+        <!-- AI 辅助工具栏 -->
+        <div class="ai-toolbar panel panel-info">
+            <div class="panel-heading">
+                <h3 class="panel-title">🤖 AI 辅助工具</h3>
+            </div>
+            <div class="panel-body">
+                <p class="text-muted">使用浏览器端 AI 助手帮助你完善点子（所有处理都在本地完成）</p>
+                <div class="btn-toolbar">
+                    <button type="button" class="btn btn-info" onclick="IdeaAI.optimizeDescription()">
+                        ✨ 优化描述
+                    </button>
+                    <button type="button" class="btn btn-info" onclick="IdeaAI.generateTags()">
+                        🏷️ 生成标签
+                    </button>
+                    <button type="button" class="btn btn-info" onclick="IdeaAI.suggestResources()">
+                        📦 推荐资源
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <form method="POST" class="form-horizontal">
+            <input type="hidden" name="csrf_token" value="${python: request.session.get('csrf_token', '')}"/>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">基本信息</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">标题 *</label>
+                        <div class="col-md-10">
+                            <input type="text" name="title" id="idea-title" class="form-control" required
+                                   placeholder="给你的点子起个名字">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">分类 *</label>
+                        <div class="col-md-10">
+                            <select name="category" id="idea-category" class="form-control" required>
+                                <tal:loop tal:repeat="cat categories">
+                                    <option value="${cat}">${categories[cat]}</option>
+                                </tal:loop>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">难度</label>
+                        <div class="col-md-10">
+                            <select name="difficulty" class="form-control">
+                                <tal:loop tal:repeat="diff difficulties">
+                                    <option value="${diff}">${difficulties[diff]}</option>
+                                </tal:loop>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">状态</label>
+                        <div class="col-md-10">
+                            <select name="status" class="form-control">
+                                <tal:loop tal:repeat="st statuses">
+                                    <option value="${st}">${statuses[st]}</option>
+                                </tal:loop>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">预计时间（天）</label>
+                        <div class="col-md-10">
+                            <input type="number" name="estimated_days" class="form-control" value="0">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">详细描述</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">点子描述 *</label>
+                        <div class="col-md-10">
+                            <textarea name="description" id="idea-description" class="form-control" rows="6" required
+                                      placeholder="详细描述你的点子，包括背景、目标、创新点等"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">需要的资源</label>
+                        <div class="col-md-10">
+                            <textarea name="needed_resources" id="idea-resources" class="form-control" rows="4"
+                                      placeholder="描述实现这个点子需要哪些资源（模型、数据、算力、人员等）"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">预期成果</label>
+                        <div class="col-md-10">
+                            <textarea name="expected_outcome" id="idea-outcome" class="form-control" rows="4"
+                                      placeholder="描述预期的成果和产出"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">标签</label>
+                        <div class="col-md-10">
+                            <input type="text" name="tags" id="idea-tags" class="form-control"
+                                   placeholder="用逗号分隔多个标签，如：GPT, 图像生成, 开源">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <button type="submit" class="btn btn-primary btn-lg">发布点子</button>
+                    <a href="${request.application_url}/ideas" class="btn btn-default btn-lg">取消</a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- 加载 AI 助手 -->
+    <script type="module">
+        import AIAssistant from '/static/js/ai-assistant.js';
+        window.ideaAI = new AIAssistant();
+        window.ideaAI.init();
+    </script>
+
+    <script>
+        const IdeaAI = {
+            // 优化描述
+            optimizeDescription: async function() {
+                const title = document.getElementById('idea-title').value;
+                const description = document.getElementById('idea-description').value;
+                const resources = document.getElementById('idea-resources').value;
+                const outcome = document.getElementById('idea-outcome').value;
+                
+                if (!title || !description) {
+                    alert('请先填写标题和描述');
+                    return;
+                }
+
+                const btn = event.target;
+                btn.disabled = true;
+                btn.textContent = '⏳ 处理中...';
+
+                try {
+                    const result = await window.ideaAI.optimizeIdea({
+                        title: title,
+                        category: document.getElementById('idea-category').value,
+                        description: description,
+                        neededResources: resources,
+                        expectedOutcome: outcome
+                    });
+
+                    if (result.success) {
+                        // 显示优化结果
+                        const optimizedDiv = document.createElement('div');
+                        optimizedDiv.className = 'ai-result alert alert-success';
+                        optimizedDiv.innerHTML = `
+                            <h4>AI 优化建议：</h4>
+                            <div class="ai-content">${result.content}</div>
+                            <hr>
+                            <button type="button" class="btn btn-sm btn-primary" onclick="IdeaAI.applyOptimization()">
+                                应用建议
+                            </button>
+                            <button type="button" class="btn btn-sm btn-default" onclick="this.parentElement.remove()">
+                                关闭
+                            </button>
+                        `;
+                        
+                        // 插入到描述字段后面
+                        const descField = document.getElementById('idea-description').parentElement;
+                        const existing = descField.querySelector('.ai-result');
+                        if (existing) existing.remove();
+                        descField.appendChild(optimizedDiv);
+                    } else {
+                        alert('优化失败: ' + result.error);
+                    }
+                } catch (error) {
+                    alert('发生错误: ' + error.message);
+                }
+
+                btn.disabled = false;
+                btn.textContent = '✨ 优化描述';
+            },
+
+            // 生成标签
+            generateTags: async function() {
+                const title = document.getElementById('idea-title').value;
+                const description = document.getElementById('idea-description').value;
+                
+                if (!title && !description) {
+                    alert('请先填写标题或描述');
+                    return;
+                }
+
+                const btn = event.target;
+                btn.disabled = true;
+                btn.textContent = '⏳ 处理中...';
+
+                try {
+                    const content = `${title}\n${description}`;
+                    const result = await window.ideaAI.suggestTags(content, 'idea');
+
+                    if (result.success && result.tags) {
+                        document.getElementById('idea-tags').value = result.tags.join(', ');
+                    } else {
+                        alert('生成失败: ' + (result.error || '未知错误'));
+                    }
+                } catch (error) {
+                    alert('发生错误: ' + error.message);
+                }
+
+                btn.disabled = false;
+                btn.textContent = '🏷️ 生成标签';
+            },
+
+            // 推荐资源
+            suggestResources: async function() {
+                const description = document.getElementById('idea-description').value;
+                
+                if (!description) {
+                    alert('请先填写点子描述');
+                    return;
+                }
+
+                alert('此功能需要在点子发布后，在详情页面使用 AI 助手进行资源推荐');
+            },
+
+            // 应用优化建议
+            applyOptimization: function() {
+                const aiContent = document.querySelector('.ai-content');
+                if (aiContent) {
+                    document.getElementById('idea-description').value = aiContent.textContent;
+                    document.querySelector('.ai-result').remove();
+                }
+            }
+        };
+    </script>
+
+    <style>
+        .ai-toolbar {
+            margin-bottom: 20px;
+        }
+        .ai-toolbar .btn-toolbar .btn {
+            margin-right: 10px;
+        }
+        .ai-result {
+            margin-top: 15px;
+        }
+        .ai-content {
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</body>
+</html>

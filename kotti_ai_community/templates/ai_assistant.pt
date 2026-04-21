@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      metal:use-macro="api.macro('kotti:templates/view/master.pt')">
+<head>
+    <title metal:fill-slot="title">AI Assistant - AI Community</title>
+</head>
+<body>
+    <div metal:fill-slot="content" class="ai-assistant-page">
+        <div class="container">
+            <div class="page-header">
+                <h1>AI Assistant</h1>
+                <p class="lead">Browser-based AI assistant powered by g4f</p>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Model Selection</h3>
+                        </div>
+                        <div class="panel-body">
+                            <select id="model-select" class="form-control">
+                                <option value="gpt-4.1-mini">GPT-4.1 Mini (Recommended)</option>
+                                <option value="gpt-4.1">GPT-4.1</option>
+                                <option value="deepseek-v3">DeepSeek V3</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-9">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Chat</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div id="chat-messages" style="min-height: 300px; border: 1px solid #ddd; padding: 15px; margin-bottom: 15px;">
+                                <p>Welcome to AI Assistant! All AI calls are made directly in your browser.</p>
+                            </div>
+                            <div class="input-group">
+                                <input type="text" id="chat-input" class="form-control" placeholder="Type your message...">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-primary" onclick="send()">Send</button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import Client from 'https://g4f.dev/dist/js/client.js';
+        window.g4fClient = new Client();
+        
+        window.send = async function() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            if (!message) return;
+            
+            const messagesDiv = document.getElementById('chat-messages');
+            messagesDiv.innerHTML += '<p><strong>You:</strong> ' + message + '</p>';
+            input.value = '';
+            
+            try {
+                const model = document.getElementById('model-select').value;
+                const result = await window.g4fClient.chat.completions.create({
+                    model: model,
+                    messages: [{ role: 'user', content: message }]
+                });
+                messagesDiv.innerHTML += '<p><strong>AI:</strong> ' + result.choices[0].message.content + '</p>';
+            } catch (e) {
+                messagesDiv.innerHTML += '<p style="color:red">Error: ' + e.message + '</p>';
+            }
+        };
+    </script>
+</body>
+</html>

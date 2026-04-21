@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      metal:use-macro="api.macro('kotti:templates/view/master.pt')">
+
+<tal:block metal:fill-slot="content">
+<div class="moderation-page" style="max-width: 1200px; margin: 0 auto; padding: 24px;">
+    <h1 style="margin-bottom: 8px;">Moderation Dashboard</h1>
+    <p style="color: #666; margin-bottom: 24px;">Review and manage reported content</p>
+
+    <!-- Stats Cards -->
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;">
+        <div style="background: white; border-radius: 12px; padding: 20px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <div style="font-size: 36px; font-weight: bold; color: #dc3545;" tal:content="stats/pending">0</div>
+            <div style="color: #666;">Pending</div>
+        </div>
+        <div style="background: white; border-radius: 12px; padding: 20px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <div style="font-size: 36px; font-weight: bold; color: #28a745;" tal:content="stats/resolved">0</div>
+            <div style="color: #666;">Resolved</div>
+        </div>
+        <div style="background: white; border-radius: 12px; padding: 20px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <div style="font-size: 36px; font-weight: bold; color: #6c757d;" tal:content="stats/dismissed">0</div>
+            <div style="color: #666;">Dismissed</div>
+        </div>
+        <div style="background: white; border-radius: 12px; padding: 20px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <div style="font-size: 36px; font-weight: bold; color: #667eea;" tal:content="stats/total">0</div>
+            <div style="color: #666;">Total</div>
+        </div>
+    </div>
+
+    <!-- Flags List -->
+    <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+        <div style="padding: 16px 20px; border-bottom: 1px solid #eee; background: #f8f9fa;">
+            <h2 style="margin: 0; font-size: 18px;">Pending Reports</h2>
+        </div>
+
+        <tal:block tal:condition="flags">
+            <tal:block tal:repeat="item flags">
+                <div style="padding: 20px; border-bottom: 1px solid #eee;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <!-- Flag Info -->
+                        <div style="flex: 1;">
+                            <!-- Content -->
+                            <div style="margin-bottom: 12px;">
+                                <span style="background: #667eea; color: white; padding: 2px 8px; border-radius: 4px; font-size: 12px; text-transform: uppercase;" tal:content="item/flag/content_type">Type</span>
+                                <tal:block tal:condition="item/content">
+                                    <a tal:attributes="href python: request.application_url + '/' + str(item['content'].id)" style="font-weight: bold; margin-left: 8px;" tal:content="item/content/title">Content Title</a>
+                                </tal:block>
+                                <tal:block tal:condition="not:item/content">
+                                    <span style="color: #999; margin-left: 8px;">[Content deleted]</span>
+                                </tal:block>
+                            </div>
+
+                            <!-- Reason -->
+                            <div style="margin-bottom: 8px;">
+                                <strong>Reason:</strong>
+                                <span tal:content="python: reasons.get(item['flag'].reason, item['flag'].reason)">Reason</span>
+                            </div>
+
+                            <!-- Details -->
+                            <div tal:condition="item/flag/details" style="margin-bottom: 8px; color: #666; font-style: italic;">
+                                "<span tal:content="item/flag/details">Details</span>"
+                            </div>
+
+                            <!-- Reporter & Time -->
+                            <div style="color: #999; font-size: 14px;">
+                                Reported by <span tal:content="item/reporter/name">User</span>
+                                on <span tal:content="python: item['flag'].created.strftime('%Y-%m-%d %H:%M') if item['flag'].created else ''">Date</span>
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div style="margin-left: 20px;">
+                            <form method="POST" action="${request/application_url}/@@resolve-flag" style="display: inline;">
+                                <input type="hidden" name="csrf_token" value="${python: request.session.get('csrf_token', '')}"/>
+                                <input type="hidden" name="flag_id" value="${item/flag/id}"/>
+                                
+                                <select name="action" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; margin-right: 8px;">
+                                    <tal:block tal:repeat="action actions">
+                                        <option tal:attributes="value action" tal:content="python: actions[action]">Action</option>
+                                    </tal:block>
+                                </select>
+                                
+                                <input type="text" name="notes" placeholder="Notes (optional)" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; margin-right: 8px; width: 150px;"/>
+                                
+                                <button type="submit" style="background: #28a745; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer;">
+                                    Resolve
+                                </button>
+                            </form>
+                            
+                            <form method="POST" action="${request/application_url}/@@resolve-flag" style="display: inline; margin-left: 8px;">
+                                <input type="hidden" name="csrf_token" value="${python: request.session.get('csrf_token', '')}"/>
+                                <input type="hidden" name="flag_id" value="${item/flag/id}"/>
+                                <input type="hidden" name="action" value="dismiss"/>
+                                <button type="submit" style="background: #6c757d; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer;">
+                                    Dismiss
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </tal:block>
+        </tal:block>
+
+        <!-- Empty State -->
+        <div tal:condition="not:flags" style="text-align: center; padding: 60px 20px;">
+            <div style="font-size: 48px; margin-bottom: 16px;">&#10003;</div>
+            <h3 style="color: #666;">No pending reports</h3>
+            <p style="color: #999;">All reported content has been reviewed.</p>
+        </div>
+    </div>
+
+    <!-- By Reason Stats -->
+    <div style="background: white; border-radius: 12px; padding: 20px; margin-top: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+        <h3 style="margin: 0 0 16px 0;">Reports by Reason</h3>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+            <tal:block tal:repeat="reason reasons">
+                <div style="display: flex; justify-content: space-between; padding: 8px 12px; background: #f8f9fa; border-radius: 8px;">
+                    <span tal:content="python: reasons[reason]">Reason</span>
+                    <span style="font-weight: bold;" tal:content="python: stats.get('by_reason', {}).get(reason, 0)">0</span>
+                </div>
+            </tal:block>
+        </div>
+    </div>
+</div>
+</tal:block>
+
+</html>

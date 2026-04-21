@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      metal:use-macro="api.macro('kotti:templates/view/master.pt')">
+
+<tal:block metal:fill-slot="content">
+<div class="project-view-page">
+    <!-- Project Header -->
+    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px; border-radius: 12px; margin-bottom: 24px; color: white;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+                <h1 style="margin: 0 0 8px 0; font-size: 32px;" tal:content="context/title">Project Title</h1>
+                <div style="display: flex; gap: 16px; font-size: 16px; opacity: 0.9; margin-bottom: 16px;">
+                    <span tal:content="context/get_status_display">Status</span>
+                    <span>|</span>
+                    <span tal:content="context/get_visibility_display">Visibility</span>
+                </div>
+
+                <!-- Progress -->
+                <div style="background: rgba(255,255,255,0.2); border-radius: 8px; padding: 12px 16px; display: inline-block;">
+                    <span style="font-size: 24px; font-weight: bold;" tal:content="python: str(context.progress) + '%'">0%</span>
+                    <span style="opacity: 0.8;"> complete</span>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div style="display: flex; gap: 12px;">
+                <tal:block tal:condition="python: not is_member and context.visibility != 'invite_only'">
+                    <a href="${request/resource_url(context)}/@@join" class="btn" style="background: white; color: #667eea; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold;">
+                        Join Project
+                    </a>
+                </tal:block>
+                <tal:block tal:condition="python: is_member and user_role not in ('owner',)">
+                    <a href="${request/resource_url(context)}/@@leave" class="btn" style="background: rgba(255,255,255,0.2); color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none;"
+                         onclick="return confirm('Are you sure you want to leave this project?');">
+                        Leave Project
+                    </a>
+                </tal:block>
+                <tal:block tal:condition="python: user_role in ('owner', 'admin')">
+                    <a href="${request/resource_url(context)}/@@edit" class="btn" style="background: rgba(255,255,255,0.2); color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none;">
+                        Edit
+                    </a>
+                </tal:block>
+            </div>
+        </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 300px; gap: 24px;">
+        <!-- Main Content -->
+        <div>
+            <!-- Description -->
+            <div style="background: white; border-radius: 12px; padding: 24px; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                <h2 style="margin: 0 0 16px 0; color: #333;">About</h2>
+                <p style="color: #666; line-height: 1.6; margin: 0;" tal:content="context/description | python: 'No description yet.'">
+                    Description
+                </p>
+            </div>
+
+            <!-- Links -->
+            <div tal:condition="python: context.repo_url or context.demo_url or context.doc_url"
+                 style="background: white; border-radius: 12px; padding: 24px; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                <h2 style="margin: 0 0 16px 0; color: #333;">Links</h2>
+                <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+                    <tal:block tal:condition="context/repo_url">
+                        <a tal:attributes="href context/repo_url" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; background: #24292e; color: white; padding: 10px 16px; border-radius: 8px; text-decoration: none;">
+                            &#128187; Repository
+                        </a>
+                    </tal:block>
+                    <tal:block tal:condition="context/demo_url">
+                        <a tal:attributes="href context/demo_url" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; background: #28a745; color: white; padding: 10px 16px; border-radius: 8px; text-decoration: none;">
+                            &#127912; Live Demo
+                        </a>
+                    </tal:block>
+                    <tal:block tal:condition="context/doc_url">
+                        <a tal:attributes="href context/doc_url" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; background: #0366d6; color: white; padding: 10px 16px; border-radius: 8px; text-decoration: none;">
+                            &#128196; Documentation
+                        </a>
+                    </tal:block>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div style="background: white; border-radius: 12px; padding: 24px; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                <h2 style="margin: 0 0 16px 0; color: #333;">Project Activity</h2>
+                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                    <a href="${request/resource_url(context)}/@@logs" style="display: inline-flex; align-items: center; gap: 8px; background: #667eea; color: white; padding: 10px 16px; border-radius: 8px; text-decoration: none;">
+                        &#128221; Practice Logs
+                    </a>
+                    <a href="${request/resource_url(context)}/@@milestones" style="display: inline-flex; align-items: center; gap: 8px; background: #ffc107; color: #333; padding: 10px 16px; border-radius: 8px; text-decoration: none;">
+                        &#127919; Milestones
+                    </a>
+                    <tal:block tal:condition="is_member">
+                        <a href="${request/resource_url(context)}/@@add_log" style="display: inline-flex; align-items: center; gap: 8px; background: #28a745; color: white; padding: 10px 16px; border-radius: 8px; text-decoration: none;">
+                            &#10133; Add Log
+                        </a>
+                    </tal:block>
+                </div>
+            </div>
+
+            <!-- Tags -->
+            <div style="background: white; border-radius: 12px; padding: 24px; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                <h2 style="margin: 0 0 16px 0; color: #333;">Tags</h2>
+                <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                    <tal:block tal:repeat="tag context/tags | python: []">
+                        <span style="background: #e3f2fd; color: #1976d2; padding: 6px 14px; border-radius: 16px; font-size: 14px;" tal:content="tag">Tag</span>
+                    </tal:block>
+                </div>
+                <p tal:condition="not:context/tags" style="color: #999; margin: 0;">No tags</p>
+            </div>
+
+            <!-- Results -->
+            <div tal:condition="context/results" style="background: white; border-radius: 12px; padding: 24px; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                <h2 style="margin: 0 0 16px 0; color: #333;">Results</h2>
+                <p style="color: #666; line-height: 1.6; margin: 0;" tal:content="context/results">Results</p>
+            </div>
+
+            <!-- Lessons Learned -->
+            <div tal:condition="context/lessons" style="background: white; border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                <h2 style="margin: 0 0 16px 0; color: #333;">Lessons Learned</h2>
+                <p style="color: #666; line-height: 1.6; margin: 0;" tal:content="context/lessons">Lessons</p>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div>
+            <!-- Team Members -->
+            <div style="background: white; border-radius: 12px; padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                <h3 style="margin: 0 0 16px 0; color: #333;">Team (${context/members_count}/${context/max_members})</h3>
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <tal:block tal:repeat="item members">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
+                                <span tal:content="python: item[1].title[0] if item[1].title else item[1].name[0]">U</span>
+                            </div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 500;" tal:content="python: item[1].title or item[1].name">Name</div>
+                                <div style="font-size: 12px; color: #666;" tal:content="python: item[0].get_role_display()">Role</div>
+                            </div>
+                        </div>
+                    </tal:block>
+                </div>
+                <p tal:condition="not:members" style="color: #999; margin: 0;">No team members yet</p>
+            </div>
+
+            <!-- Stats -->
+            <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                <h3 style="margin: 0 0 16px 0; color: #333;">Statistics</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div style="text-align: center; padding: 12px; background: #f5f5f5; border-radius: 8px;">
+                        <div style="font-size: 24px; font-weight: bold; color: #667eea;" tal:content="context/views_count">0</div>
+                        <div style="font-size: 12px; color: #666;">Views</div>
+                    </div>
+                    <div style="text-align: center; padding: 12px; background: #f5f5f5; border-radius: 8px;">
+                        <div style="font-size: 24px; font-weight: bold; color: #667eea;" tal:content="context/stars_count">0</div>
+                        <div style="font-size: 12px; color: #666;">Stars</div>
+                    </div>
+                    <div style="text-align: center; padding: 12px; background: #f5f5f5; border-radius: 8px;">
+                        <div style="font-size: 24px; font-weight: bold; color: #667eea;" tal:content="context/followers_count">0</div>
+                        <div style="font-size: 12px; color: #666;">Followers</div>
+                    </div>
+                    <div style="text-align: center; padding: 12px; background: #f5f5f5; border-radius: 8px;">
+                        <div style="font-size: 24px; font-weight: bold; color: #667eea;" tal:content="context/progress">0</div>
+                        <div style="font-size: 12px; color: #666;">Progress %</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</tal:block>
+
+</html>

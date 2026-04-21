@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      metal:use-macro="api.macro('kotti:templates/view/master.pt')">
+<head>
+    <title metal:fill-slot="title">Ideas - AI Community</title>
+</head>
+<body>
+    <div metal:fill-slot="content" class="idea-list-page">
+        <div class="page-header">
+            <h1>Ideas Square</h1>
+            <p class="lead">Share your AI ideas, find like-minded partners</p>
+        </div>
+
+        <div class="filters well">
+            <form method="GET" class="form-inline">
+                <div class="row">
+                    <div class="col-md-3">
+                        <select name="category" class="form-control">
+                            <option value="">All Categories</option>
+                            <tal:loop tal:repeat="cat categories">
+                                <option value="${cat}"
+                                        tal:attributes="selected 'selected' if filters['category'] == cat else None">
+                                    ${categories[cat]}
+                                </option>
+                            </tal:loop>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select name="status" class="form-control">
+                            <option value="">All Status</option>
+                            <tal:loop tal:repeat="st statuses">
+                                <option value="${st}"
+                                        tal:attributes="selected 'selected' if filters['status'] == st else None">
+                                    ${statuses[st]}
+                                </option>
+                            </tal:loop>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select name="difficulty" class="form-control">
+                            <option value="">All Difficulty</option>
+                            <tal:loop tal:repeat="diff difficulties">
+                                <option value="${diff}"
+                                        tal:attributes="selected 'selected' if filters['difficulty'] == diff else None">
+                                    ${difficulties[diff]}
+                                </option>
+                            </tal:loop>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="text" name="search" class="form-control"
+                               placeholder="Search ideas..." value="${filters['search']}">
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 10px;">
+                    <div class="col-md-12">
+                        <button type="submit" class="btn btn-primary">Filter</button>
+                        <a href="${request.url}" class="btn btn-default">Reset</a>
+                        <a href="${request.application_url}/@@add_idea" class="btn btn-success pull-right">
+                            Post Idea
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="ideas-list">
+            <tal:repeat tal:repeat="idea ideas">
+                <div class="idea-card panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            <a href="${request.resource_url(idea)}">${idea.title}</a>
+                        </h3>
+                        <div class="idea-meta">
+                            <span class="label label-info">${idea.get_category_display()}</span>
+                            <span class="label label-success">${idea.get_status_display()}</span>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <p>${idea.description[:200] if idea.description else ''}</p>
+                    </div>
+                    <div class="panel-footer">
+                        <span class="stat">Views: ${idea.views_count}</span>
+                        <span class="stat">Likes: ${idea.likes_count}</span>
+                        <span class="pull-right text-muted">
+                            ${idea.creator.name}
+                        </span>
+                    </div>
+                </div>
+            </tal:repeat>
+
+            <div tal:condition="not ideas" class="alert alert-info">
+                No ideas yet, <a href="${request.application_url}/@@add_idea">post the first one</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      metal:use-macro="api.macro('kotti:templates/view/master.pt')">
+
+<tal:block metal:fill-slot="content">
+<div class="practice-log-add-page" style="max-width: 800px; margin: 0 auto; padding: 24px;">
+    <h1 style="margin-bottom: 8px;">Add Practice Log</h1>
+    <p style="color: #666; margin-bottom: 24px;">
+        Project: <a href="${request/resource_url(context)}" style="color: #667eea;">${context/title}</a>
+    </p>
+
+    <form method="POST" action="" style="background: white; border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+        <!-- Title -->
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; font-weight: bold; margin-bottom: 8px;">Title *</label>
+            <input type="text" name="title" required
+                   placeholder="What did you work on?"
+                   style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px;"/>
+        </div>
+
+        <!-- Log Type -->
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; font-weight: bold; margin-bottom: 8px;">Log Type</label>
+            <select name="log_type" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px;">
+                <tal:block tal:repeat="lt python: ['progress', 'milestone', 'achievement', 'blocker', 'learning', 'decision', 'other']">
+                    <option tal:attributes="value lt" tal:content="python: log_types.get(lt, lt)">Type</option>
+                </tal:block>
+            </select>
+        </div>
+
+        <!-- Content -->
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; font-weight: bold; margin-bottom: 8px;">Details</label>
+            <textarea name="content" rows="6"
+                      placeholder="Describe what you did, what you learned, any challenges faced..."
+                      style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; resize: vertical;"></textarea>
+        </div>
+
+        <!-- Progress Update -->
+        <div style="margin-bottom: 20px; padding: 16px; background: #f8f9fa; border-radius: 8px;">
+            <label style="display: block; font-weight: bold; margin-bottom: 8px;">Progress Update</label>
+            <p style="color: #666; font-size: 14px; margin: 0 0 12px 0;">Current progress: ${context/progress}%</p>
+            <div style="display: flex; gap: 16px; align-items: center;">
+                <label style="font-size: 14px;">Change:</label>
+                <input type="number" name="progress_change" value="0" min="-100" max="100"
+                       style="width: 100px; padding: 8px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px;"/>
+                <span style="color: #666; font-size: 14px;">% (positive to increase, negative to decrease)</span>
+            </div>
+        </div>
+
+        <!-- Time Spent -->
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; font-weight: bold; margin-bottom: 8px;">Time Spent (hours)</label>
+            <input type="number" name="time_spent" value="0" min="0"
+                   style="width: 150px; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px;"/>
+        </div>
+
+        <!-- Tags -->
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; font-weight: bold; margin-bottom: 8px;">Tags</label>
+            <input type="text" name="tags"
+                   placeholder="coding, debugging, documentation (comma separated)"
+                   style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px;"/>
+        </div>
+
+        <!-- Visibility -->
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; font-weight: bold; margin-bottom: 8px;">Visibility</label>
+            <select name="visibility" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px;">
+                <tal:block tal:repeat="v python: ['public', 'members', 'private']">
+                    <option tal:attributes="value v; selected python: v == 'public'" tal:content="python: log_visibility.get(v, v)">Visibility</option>
+                </tal:block>
+            </select>
+        </div>
+
+        <!-- Submit -->
+        <div style="margin-top: 24px;">
+            <button type="submit" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 14px 32px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer;">
+                Add Log Entry
+            </button>
+            <a href="${request/resource_url(context)}/@@logs" style="margin-left: 16px; color: #666;">Cancel</a>
+        </div>
+    </form>
+</div>
+</tal:block>
+
+</html>

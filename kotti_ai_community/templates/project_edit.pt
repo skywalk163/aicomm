@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      metal:use-macro="api.macro('kotti:templates/view/master.pt')">
+
+<tal:block metal:fill-slot="content">
+<div class="project-edit-page" style="max-width: 800px; margin: 0 auto; padding: 24px;">
+    <h1 style="margin-bottom: 24px;">Edit Project</h1>
+
+    <form method="POST" action="" style="background: white; border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+        <!-- Title -->
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; font-weight: bold; margin-bottom: 8px;">Project Title</label>
+            <input type="text" name="title" required
+                   tal:attributes="value context/title"
+                   style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px;"/>
+        </div>
+
+        <!-- Description -->
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; font-weight: bold; margin-bottom: 8px;">Description</label>
+            <textarea name="description" rows="5"
+                      style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; resize: vertical;"
+                      tal:content="context/description">Description</textarea>
+        </div>
+
+        <!-- Status -->
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; font-weight: bold; margin-bottom: 8px;">Status</label>
+            <select name="status" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px;">
+                <tal:block tal:repeat="s python: ['planning', 'recruiting', 'in_progress', 'on_hold', 'completed', 'cancelled']">
+                    <option tal:attributes="value s; selected python: context.status == s" tal:content="python: statuses.get(s, s)">Status</option>
+                </tal:block>
+            </select>
+        </div>
+
+        <!-- Visibility -->
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; font-weight: bold; margin-bottom: 8px;">Visibility</label>
+            <select name="visibility" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px;">
+                <tal:block tal:repeat="v python: ['public', 'private', 'invite_only']">
+                    <option tal:attributes="value v; selected python: context.visibility == v" tal:content="python: visibilities.get(v, v)">Visibility</option>
+                </tal:block>
+            </select>
+        </div>
+
+        <!-- Progress -->
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; font-weight: bold; margin-bottom: 8px;">Progress: <span tal:replace="context/progress">0</span>%</label>
+            <input type="range" name="progress" min="0" max="100"
+                   tal:attributes="value context/progress"
+                   style="width: 100%;"
+                   oninput="this.previousElementSibling.querySelector('span').textContent = this.value + '%';"/>
+        </div>
+
+        <!-- Tags -->
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; font-weight: bold; margin-bottom: 8px;">Tags</label>
+            <input type="text" name="tags"
+                   tal:attributes="value python: ', '.join(context.tags or [])"
+                   style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px;"/>
+        </div>
+
+        <!-- Repository URL -->
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; font-weight: bold; margin-bottom: 8px;">Repository URL</label>
+            <input type="text" name="repo_url"
+                   tal:attributes="value context/repo_url | nothing"
+                   style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px;"/>
+        </div>
+
+        <!-- Demo URL -->
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; font-weight: bold; margin-bottom: 8px;">Demo URL</label>
+            <input type="text" name="demo_url"
+                   tal:attributes="value context/demo_url | nothing"
+                   style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px;"/>
+        </div>
+
+        <!-- Documentation URL -->
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; font-weight: bold; margin-bottom: 8px;">Documentation URL</label>
+            <input type="text" name="doc_url"
+                   tal:attributes="value context/doc_url | nothing"
+                   style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px;"/>
+        </div>
+
+        <!-- Results -->
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; font-weight: bold; margin-bottom: 8px;">Results / Outcomes</label>
+            <textarea name="results" rows="4"
+                      placeholder="Document the results and outcomes of the project..."
+                      style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; resize: vertical;"
+                      tal:content="context/results | nothing">Results</textarea>
+        </div>
+
+        <!-- Lessons Learned -->
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; font-weight: bold; margin-bottom: 8px;">Lessons Learned</label>
+            <textarea name="lessons" rows="4"
+                      placeholder="What did you learn from this project?"
+                      style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; resize: vertical;"
+                      tal:content="context/lessons | nothing">Lessons</textarea>
+        </div>
+
+        <!-- Submit -->
+        <div style="margin-top: 24px;">
+            <button type="submit" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 14px 32px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer;">
+                Save Changes
+            </button>
+            <a href="${request/resource_url(context)}" style="margin-left: 16px; color: #666;">Cancel</a>
+        </div>
+    </form>
+</div>
+</tal:block>
+
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      metal:use-macro="api.macro('kotti:templates/view/master.pt')">
+
+<tal:block metal:fill-slot="content">
+<div class="project-list-page" style="max-width: 1200px; margin: 0 auto; padding: 24px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+        <h1 style="margin: 0;">Projects</h1>
+        <a href="${request.application_url}/@@add_project" class="btn" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold;">
+            Create Project
+        </a>
+    </div>
+
+    <!-- Filters -->
+    <div style="background: white; border-radius: 12px; padding: 20px; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+        <form method="GET" action="" style="display: flex; gap: 16px; flex-wrap: wrap;">
+            <input type="text" name="search" tal:attributes="value filters/search | nothing"
+                   placeholder="Search projects..."
+                   style="flex: 1; min-width: 200px; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px;"/>
+
+            <select name="status" style="padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; min-width: 150px;">
+                <option value="">All Status</option>
+                <tal:block tal:repeat="s python: ['planning', 'recruiting', 'in_progress', 'completed']">
+                    <option tal:attributes="value s; selected python: filters.get('status') == s"
+                            tal:content="python: statuses.get(s, s)">Status</option>
+                </tal:block>
+            </select>
+
+            <select name="sort" style="padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; min-width: 150px;">
+                <option value="created" tal:attributes="selected python: filters.get('sort') == 'created'">Newest</option>
+                <option value="members" tal:attributes="selected python: filters.get('sort') == 'members'">Most Members</option>
+                <option value="stars" tal:attributes="selected python: filters.get('sort') == 'stars'">Most Stars</option>
+                <option value="progress" tal:attributes="selected python: filters.get('sort') == 'progress'">Most Progress</option>
+            </select>
+
+            <button type="submit" style="background: #667eea; color: white; padding: 12px 24px; border: none; border-radius: 8px; font-size: 16px; cursor: pointer;">
+                Search
+            </button>
+        </form>
+    </div>
+
+    <!-- Projects Grid -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px;">
+        <tal:block tal:repeat="project projects">
+            <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform 0.2s;">
+                <a href="${request.resource_url(project)}" style="text-decoration: none; color: inherit;">
+                    <!-- Header -->
+                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; color: white;">
+                        <h3 style="margin: 0 0 8px 0; font-size: 20px;" tal:content="project/title">Project Title</h3>
+                        <div style="display: flex; gap: 12px; font-size: 14px; opacity: 0.9;">
+                            <span tal:content="project/get_status_display">Status</span>
+                            <span>|</span>
+                            <span tal:content="project/get_visibility_display">Visibility</span>
+                        </div>
+                    </div>
+
+                    <!-- Body -->
+                    <div style="padding: 20px;">
+                        <p style="color: #666; margin: 0 0 16px 0; line-height: 1.5; height: 48px; overflow: hidden;"
+                           tal:content="python: project.description[:150] + '...' if project.description and len(project.description) > 150 else (project.description or 'No description')">
+                            Description
+                        </p>
+
+                        <!-- Progress Bar -->
+                        <div style="margin-bottom: 16px;">
+                            <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 4px;">
+                                <span>Progress</span>
+                                <span>${project/progress}%</span>
+                            </div>
+                            <div style="background: #e0e0e0; border-radius: 4px; height: 8px; overflow: hidden;">
+                                <div style="width: ${project/progress}%; background: linear-gradient(90deg, #667eea, #764ba2); height: 100%;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Tags -->
+                        <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px;">
+                            <tal:block tal:repeat="tag python: (project.tags or [])[:3]">
+                                <span style="background: #e3f2fd; color: #1976d2; padding: 2px 8px; border-radius: 12px; font-size: 12px;" tal:content="tag">Tag</span>
+                            </tal:block>
+                        </div>
+
+                        <!-- Stats -->
+                        <div style="display: flex; gap: 16px; padding-top: 16px; border-top: 1px solid #eee; font-size: 14px; color: #666;">
+                            <span>&#128100; ${project/members_count} members</span>
+                            <span>&#11088; ${project/stars_count} stars</span>
+                            <span>&#128065; ${project/views_count} views</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </tal:block>
+    </div>
+
+    <!-- Empty State -->
+    <div tal:condition="not:projects" style="text-align: center; padding: 60px 20px;">
+        <div style="font-size: 48px; margin-bottom: 16px;">&#128640;</div>
+        <h3 style="color: #666;">No projects yet</h3>
+        <p style="color: #999;">Be the first to create a project!</p>
+        <a href="${request.application_url}/@@add_project" style="display: inline-block; margin-top: 16px; background: #667eea; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none;">
+            Create Project
+        </a>
+    </div>
+</div>
+</tal:block>
+
+</html>

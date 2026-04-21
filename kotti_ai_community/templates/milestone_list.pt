@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      metal:use-macro="api.macro('kotti:templates/view/master.pt')">
+
+<tal:block metal:fill-slot="content">
+<div class="milestone-list-page" style="max-width: 1000px; margin: 0 auto; padding: 24px;">
+    <!-- Header -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+        <div>
+            <h1 style="margin: 0;">
+                <a href="${request/resource_url(context)}" style="color: inherit; text-decoration: none;">${context/title}</a>
+            </h1>
+            <p style="color: #666; margin: 8px 0 0 0;">Project Milestones</p>
+        </div>
+        <a href="${request/resource_url(context)}/@@add_milestone" class="btn" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold;">
+            Add Milestone
+        </a>
+    </div>
+
+    <!-- Milestones Timeline -->
+    <div style="position: relative; padding-left: 40px;">
+        <!-- Timeline line -->
+        <div style="position: absolute; left: 15px; top: 0; bottom: 0; width: 2px; background: #e0e0e0;"></div>
+
+        <div style="display: flex; flex-direction: column; gap: 24px;">
+            <tal:block tal:repeat="milestone milestones">
+                <!-- Timeline dot -->
+                <div style="position: absolute; left: 7px; width: 18px; height: 18px; border-radius: 50%; background: white; border: 3px solid;"
+                     tal:attributes="style python: 'border-color: ' + {'planned': '#667eea', 'in_progress': '#ffc107', 'completed': '#28a745', 'missed': '#dc3545', 'cancelled': '#6c757d'}.get(milestone.status, '#999')"></div>
+
+                <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);"
+                     tal:attributes="class python: ''">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <div style="flex: 1;">
+                            <h3 style="margin: 0 0 8px 0;" tal:content="milestone/title">Milestone Title</h3>
+                            <p style="color: #666; margin: 0 0 12px 0;" tal:content="milestone/description">Description</p>
+                        </div>
+                        <div style="text-align: right;">
+                            <span style="padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 500;"
+                                  tal:attributes="style python: 'background: ' + {'planned': '#e3f2fd', 'in_progress': '#fff3cd', 'completed': '#d4edda', 'missed': '#f8d7da', 'cancelled': '#e2e3e5'}.get(milestone.status, '#f8f9fa') + '; color: ' + {'planned': '#1976d2', 'in_progress': '#856404', 'completed': '#155724', 'missed': '#721c24', 'cancelled': '#383d41'}.get(milestone.status, '#666')"
+                                  tal:content="milestone/get_status_display">Status</span>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 24px; font-size: 14px; color: #666; margin-top: 12px;">
+                        <tal:block tal:condition="milestone/target_date">
+                            <div tal:define="from datetime import datetime; ts python: datetime.fromtimestamp(milestone.target_date)">
+                                <strong>Target:</strong> <span tal:content="python: ts.strftime('%Y-%m-%d')">Date</span>
+                            </div>
+                        </tal:block>
+                        <tal:block tal:condition="python: milestone.status == 'completed' and milestone.completed_date">
+                            <div tal:define="from datetime import datetime; ts python: datetime.fromtimestamp(milestone.completed_date)">
+                                <strong>Completed:</strong> <span tal:content="python: ts.strftime('%Y-%m-%d')">Date</span>
+                            </div>
+                        </tal:block>
+                        <div tal:condition="python: milestone.progress > 0">
+                            <strong>Progress:</strong> ${milestone/progress}%
+                        </div>
+                    </div>
+
+                    <!-- Progress Bar -->
+                    <div style="margin-top: 12px;" tal:condition="python: milestone.progress > 0">
+                        <div style="background: #e0e0e0; border-radius: 4px; height: 6px; overflow: hidden;">
+                            <div style="width: ${milestone/progress}%; background: linear-gradient(90deg, #667eea, #764ba2); height: 100%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </tal:block>
+        </div>
+    </div>
+
+    <!-- Empty State -->
+    <div tal:condition="not:milestones" style="text-align: center; padding: 60px 20px; background: white; border-radius: 12px;">
+        <div style="font-size: 48px; margin-bottom: 16px;">&#127919;</div>
+        <h3 style="color: #666;">No milestones defined</h3>
+        <p style="color: #999;">Break down your project into milestones!</p>
+        <a href="${request/resource_url(context)}/@@add_milestone" style="display: inline-block; margin-top: 16px; background: #667eea; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none;">
+            Add First Milestone
+        </a>
+    </div>
+</div>
+</tal:block>
+
+</html>

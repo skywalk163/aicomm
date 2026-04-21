@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      metal:use-macro="api.macro('kotti:templates/view/master.pt')">
+<head>
+    <title metal:fill-slot="title">AI Community - Ideas Sharing</title>
+</head>
+<body>
+    <div metal:fill-slot="content" class="home-page">
+        <div class="hero-section">
+            <div class="container">
+                <h1 class="hero-title">AI Community</h1>
+                <p class="hero-subtitle">Share Ideas, Make It Happen</p>
+                <p class="hero-description">
+                    Share your AI ideas, find like-minded partners
+                </p>
+                <div class="hero-actions">
+                    <a href="${request.application_url}/@@ideas" class="btn btn-primary btn-lg">
+                        Browse Ideas
+                    </a>
+                    <a href="${request.application_url}/@@add_idea" class="btn btn-success btn-lg">
+                        Post Idea
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-section">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-3 stat-item">
+                        <h2>${stats['total_ideas']}</h2>
+                        <p>Ideas</p>
+                    </div>
+                    <div class="col-md-3 stat-item">
+                        <h2>${stats['total_projects']}</h2>
+                        <p>Projects</p>
+                    </div>
+                    <div class="col-md-3 stat-item">
+                        <h2>${stats['total_resources']}</h2>
+                        <p>Resources</p>
+                    </div>
+                    <div class="col-md-3 stat-item">
+                        <h2>Unlimited</h2>
+                        <p>Possibilities</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">
+                                    Latest Ideas
+                                    <a href="${request.application_url}/@@ideas" class="pull-right">View All</a>
+                                </h3>
+                            </div>
+                            <div class="panel-body">
+                                <ul class="list-group">
+                                    <tal:repeat tal:repeat="idea latest_ideas">
+                                        <li class="list-group-item">
+                                            <a href="${request.resource_url(idea)}">${idea.title}</a>
+                                        </li>
+                                    </tal:repeat>
+                                </ul>
+                                <div tal:condition="not latest_ideas" class="text-center text-muted">
+                                    No ideas yet
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">
+                                    Latest Resources
+                                    <a href="${request.application_url}/@@resources" class="pull-right">View All</a>
+                                </h3>
+                            </div>
+                            <div class="panel-body">
+                                <ul class="list-group">
+                                    <tal:repeat tal:repeat="resource latest_resources">
+                                        <li class="list-group-item">
+                                            <a href="${request.resource_url(resource)}">${resource.title}</a>
+                                        </li>
+                                    </tal:repeat>
+                                </ul>
+                                <div tal:condition="not latest_resources" class="text-center text-muted">
+                                    No resources yet
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="features-section">
+            <div class="container">
+                <h2 class="section-title">Community Features</h2>
+                <div class="row">
+                    <div class="col-md-3 feature-item">
+                        <a href="${request.application_url}/@@ideas" class="feature-link">
+                            <h3>Ideas Square</h3>
+                            <p>Share your AI ideas</p>
+                        </a>
+                    </div>
+                    <div class="col-md-3 feature-item">
+                        <a href="${request.application_url}/@@projects" class="feature-link">
+                            <h3>Projects</h3>
+                            <p>Collaborate on projects</p>
+                        </a>
+                    </div>
+                    <div class="col-md-3 feature-item">
+                        <a href="${request.application_url}/@@leaderboard" class="feature-link">
+                            <h3>Leaderboard</h3>
+                            <p>Top contributors</p>
+                        </a>
+                    </div>
+                    <div class="col-md-3 feature-item">
+                        <a href="${request.application_url}/@@ai-assistant" class="feature-link">
+                            <h3>AI Assistant</h3>
+                            <p>Browser-based AI helper</p>
+                        </a>
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 20px;">
+                    <div class="col-md-3 feature-item">
+                        <a href="${request.application_url}/@@resources" class="feature-link">
+                            <h3>Resources</h3>
+                            <p>Share AI resources</p>
+                        </a>
+                    </div>
+                    <div class="col-md-3 feature-item">
+                        <a href="${request.application_url}/@@members" class="feature-link">
+                            <h3>Members</h3>
+                            <p>Find collaborators</p>
+                        </a>
+                    </div>
+                    <div class="col-md-3 feature-item">
+                        <a href="${request.application_url}/@@match" class="feature-link">
+                            <h3>Smart Match</h3>
+                            <p>Find matching ideas</p>
+                        </a>
+                    </div>
+                    <div class="col-md-3 feature-item">
+                        <a href="${request.application_url}/@@notifications" class="feature-link">
+                            <h3>Notifications</h3>
+                            <p>Stay updated</p>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .home-page .hero-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 80px 0;
+            text-align: center;
+        }
+        .home-page .hero-title {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .home-page .hero-subtitle {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .home-page .hero-actions .btn {
+            margin: 0 10px;
+        }
+        .home-page .stats-section {
+            background: #f8f9fa;
+            padding: 40px 0;
+            text-align: center;
+        }
+        .home-page .stat-item h2 {
+            font-size: 48px;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        .home-page .content-section {
+            padding: 40px 0;
+        }
+        .home-page .features-section {
+            background: #2c3e50;
+            color: white;
+            padding: 60px 0;
+        }
+        .home-page .section-title {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .home-page .feature-item {
+            text-align: center;
+            padding: 20px;
+        }
+        .home-page .feature-link {
+            display: block;
+            color: white;
+            text-decoration: none;
+        }
+        .home-page .feature-link:hover {
+            color: #ddd;
+        }
+    </style>
+</body>
+</html>
