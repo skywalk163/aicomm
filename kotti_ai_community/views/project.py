@@ -83,7 +83,11 @@ class ProjectViews:
             raise HTTPForbidden()
 
         if self.request.method == "POST":
-            self.context.title = truncate_string(self.request.params.get("title", self.context.title), 200)
+            # Validate CSRF token
+            if not validate_csrf_token(self.request):
+                raise HTTPForbidden("Invalid CSRF token")
+
+            self.context.title = truncate_string(self.request.params.get("title", ""), 200)
             self.context.description = self.request.params.get("description", "")
             self.context.status = self.request.params.get("status", self.context.status)
             self.context.visibility = self.request.params.get("visibility", self.context.visibility)
@@ -94,9 +98,9 @@ class ProjectViews:
             self.context.results = self.request.params.get("results", "")
             self.context.lessons = self.request.params.get("lessons", "")
 
-            # Parse tags
+            # Parse tags (limit to 10 tags, each max 50 chars)
             tags_str = self.request.params.get("tags", "")
-            self.context.tags = [t.strip() for t in tags_str.split(",") if t.strip()]
+            self.context.tags = [t.strip()[:50] for t in tags_str.split(",") if t.strip()][:10]
 
             return HTTPFound(location=self.request.resource_url(self.context))
 

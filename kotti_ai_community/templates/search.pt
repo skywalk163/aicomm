@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      metal:use-macro="api.macro('kotti:templates/view/master.pt')">
+<head>
+    <title>Search - AI Community</title>
+</head>
+<body>
+    <div metal:fill-slot="content">
+        <div class="search-page">
+            <h1>Search</h1>
+            
+            <!-- Search Form -->
+            <form action="${request.resource_url(context, '@@search')}" method="get" class="search-form">
+                <div class="search-input-group">
+                    <input type="text" 
+                           name="q" 
+                           value="${query}" 
+                           placeholder="Search ideas, resources, projects..."
+                           class="search-input"
+                           tal:attributes="value query" />
+                    <button type="submit" class="search-button">Search</button>
+                </div>
+                
+                <div class="search-filters">
+                    <label>
+                        <input type="radio" name="type" value="all" 
+                               tal:attributes="checked python: content_type == 'all' and 'checked' or None" />
+                        All
+                    </label>
+                    <label>
+                        <input type="radio" name="type" value="ideas"
+                               tal:attributes="checked python: content_type == 'ideas' and 'checked' or None" />
+                        Ideas
+                    </label>
+                    <label>
+                        <input type="radio" name="type" value="resources"
+                               tal:attributes="checked python: content_type == 'resources' and 'checked' or None" />
+                        Resources
+                    </label>
+                    <label>
+                        <input type="radio" name="type" value="projects"
+                               tal:attributes="checked python: content_type == 'projects' and 'checked' or None" />
+                        Projects
+                    </label>
+                </div>
+            </form>
+            
+            <!-- Search Results -->
+            <div class="search-results" tal:condition="query">
+                <div class="results-header">
+                    <tal:block tal:condition="total_count">
+                        Found <strong>${total_count}</strong> result(s) for "<em>${query}</em>"
+                    </tal:block>
+                    <tal:block tal:condition="python: not total_count and query">
+                        No results found for "<em>${query}</em>"
+                    </tal:block>
+                </div>
+                
+                <div class="results-list">
+                    <tal:results tal:repeat="result results">
+                        <div class="result-item">
+                            <div class="result-type">
+                                <span class="type-badge type-${result/type}">
+                                    ${python: result['type'].title()}
+                                </span>
+                            </div>
+                            <div class="result-content">
+                                <h3 class="result-title">
+                                    <a href="${result/url}">${result/title}</a>
+                                </h3>
+                                <p class="result-description">
+                                    ${python: result['description'][:300] + ('...' if len(result['description']) > 300 else '')}
+                                </p>
+                                <div class="result-tags" tal:condition="result/tags">
+                                    <tal:tags tal:repeat="tag result/tags">
+                                        <span class="tag">${tag}</span>
+                                    </tal:tags>
+                                </div>
+                            </div>
+                        </div>
+                    </tal:results>
+                </div>
+                
+                <!-- Pagination -->
+                <div class="pagination" tal:condition="pagination">
+                    <tal:pagination>
+                        <span class="page-info">
+                            Page ${pagination/page} of ${pagination/pages}
+                        </span>
+                        
+                        <a tal:condition="pagination/has_prev"
+                           href="${python: request.current_route_url(q=query, type=content_type, page=pagination.prev_page)}"
+                           class="page-link">Previous</a>
+                        
+                        <a tal:condition="pagination/has_next"
+                           href="${python: request.current_route_url(q=query, type=content_type, page=pagination/next_page)}"
+                           class="page-link">Next</a>
+                    </tal:pagination>
+                </div>
+            </div>
+            
+            <!-- No query message -->
+            <div class="search-help" tal:condition="python: not query">
+                <p>Enter at least 2 characters to search.</p>
+                <p>Search across ideas, resources, and projects by title, description, or tags.</p>
+            </div>
+        </div>
+        
+        <style>
+            .search-page {
+                max-width: 900px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            
+            .search-form {
+                margin-bottom: 30px;
+            }
+            
+            .search-input-group {
+                display: flex;
+                gap: 10px;
+                margin-bottom: 15px;
+            }
+            
+            .search-input {
+                flex: 1;
+                padding: 12px 15px;
+                font-size: 16px;
+                border: 2px solid #ddd;
+                border-radius: 5px;
+            }
+            
+            .search-input:focus {
+                border-color: #4a90d9;
+                outline: none;
+            }
+            
+            .search-button {
+                padding: 12px 25px;
+                font-size: 16px;
+                background: #4a90d9;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+            
+            .search-button:hover {
+                background: #357abd;
+            }
+            
+            .search-filters {
+                display: flex;
+                gap: 20px;
+            }
+            
+            .search-filters label {
+                display: flex;
+                align-items: center;
+                gap: 5px;
+                cursor: pointer;
+            }
+            
+            .results-header {
+                margin-bottom: 20px;
+                font-size: 14px;
+                color: #666;
+            }
+            
+            .result-item {
+                display: flex;
+                gap: 15px;
+                padding: 20px;
+                margin-bottom: 15px;
+                background: #f9f9f9;
+                border-radius: 8px;
+                border-left: 4px solid #ddd;
+            }
+            
+            .result-item:hover {
+                background: #f0f7ff;
+            }
+            
+            .type-badge {
+                display: inline-block;
+                padding: 4px 10px;
+                border-radius: 4px;
+                font-size: 12px;
+                font-weight: bold;
+                text-transform: uppercase;
+            }
+            
+            .type-idea {
+                background: #e3f2fd;
+                color: #1976d2;
+            }
+            
+            .type-resource {
+                background: #e8f5e9;
+                color: #388e3c;
+            }
+            
+            .type-project {
+                background: #fff3e0;
+                color: #f57c00;
+            }
+            
+            .result-content {
+                flex: 1;
+            }
+            
+            .result-title {
+                margin: 0 0 8px 0;
+            }
+            
+            .result-title a {
+                color: #333;
+                text-decoration: none;
+            }
+            
+            .result-title a:hover {
+                color: #4a90d9;
+            }
+            
+            .result-description {
+                color: #666;
+                margin: 0 0 10px 0;
+                line-height: 1.5;
+            }
+            
+            .result-tags {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 5px;
+            }
+            
+            .tag {
+                background: #e0e0e0;
+                padding: 2px 8px;
+                border-radius: 3px;
+                font-size: 12px;
+                color: #555;
+            }
+            
+            .pagination {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 20px;
+                margin-top: 30px;
+            }
+            
+            .page-link {
+                padding: 8px 16px;
+                background: #4a90d9;
+                color: white;
+                text-decoration: none;
+                border-radius: 4px;
+            }
+            
+            .page-link:hover {
+                background: #357abd;
+            }
+            
+            .search-help {
+                text-align: center;
+                color: #888;
+                padding: 40px;
+            }
+        </style>
+    </div>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      metal:use-macro="api.macro('kotti:templates/view/master.pt')">
+
+<tal:block metal:fill-slot="content">
+<div class="practice-log-view-page" style="max-width: 800px; margin: 0 auto; padding: 24px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+        <div>
+            <h1 style="margin: 0;" tal:content="context/title">Log Title</h1>
+            <div style="color: #666; margin-top: 8px;">
+                <span tal:content="python: log_types.get(context.log_type, context.log_type)">Type</span>
+                <span> | </span>
+                <span tal:content="python: context.log_date.strftime('%Y-%m-%d %H:%M') if context.log_date else ''">Date</span>
+            </div>
+        </div>
+        <a tal:attributes="href python: request.resource_url(context) + '/edit'" 
+           style="background: #667eea; color: white; padding: 8px 16px; border-radius: 4px; text-decoration: none;">
+            Edit
+        </a>
+    </div>
+
+    <div style="background: white; border-radius: 12px; padding: 24px; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+        <div tal:content="context/content">Content</div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px;">
+        <div style="background: white; border-radius: 12px; padding: 16px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <div style="font-size: 24px; font-weight: bold; color: #667eea;" tal:content="context/time_spent">0</div>
+            <div style="color: #666;">Minutes Spent</div>
+        </div>
+        <div style="background: white; border-radius: 12px; padding: 16px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <div style="font-size: 24px; font-weight: bold; color: #28a745;" tal:content="context/progress_change">+0</div>
+            <div style="color: #666;">Progress Change</div>
+        </div>
+        <div style="background: white; border-radius: 12px; padding: 16px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <div style="font-size: 24px; font-weight: bold; color: #667eea;" tal:content="context/new_progress">0</div>
+            <div style="color: #666;">New Progress %</div>
+        </div>
+    </div>
+
+    <div tal:condition="context/tags" style="background: white; border-radius: 12px; padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+        <h3 style="margin: 0 0 12px 0;">Tags</h3>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <tal:block tal:repeat="tag context/tags">
+                <span style="background: #e3f2fd; color: #1976d2; padding: 4px 12px; border-radius: 16px;" tal:content="tag">Tag</span>
+            </tal:block>
+        </div>
+    </div>
+
+    <div style="margin-top: 24px;">
+        <a tal:condition="project" tal:attributes="href python: request.resource_url(project)" 
+           style="color: #667eea; text-decoration: none;">
+            &larr; Back to Project
+        </a>
+    </div>
+</div>
+</tal:block>
+
+</html>

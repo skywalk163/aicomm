@@ -1,5 +1,7 @@
 # Kotti AI Community
 
+[![Tests](https://github.com/YOUR_USERNAME/kotti_ai_community/actions/workflows/test.yml/badge.svg)](https://github.com/YOUR_USERNAME/kotti_ai_community/actions/workflows/test.yml)
+[![Lint](https://github.com/YOUR_USERNAME/kotti_ai_community/actions/workflows/lint.yml/badge.svg)](https://github.com/YOUR_USERNAME/kotti_ai_community/actions/workflows/lint.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 
@@ -33,6 +35,7 @@ A comprehensive AI community plugin for [Kotti CMS](https://github.com/Kotti/Kot
 | **Leaderboard** | Gamified ranking system based on contribution points |
 | **Notifications** | Real-time in-app notification system |
 | **AI Assistant** | Browser-based AI helper powered by g4f |
+| **Full-text Search** | Search ideas, resources, and projects by keywords |
 
 ### Technical Highlights
 
@@ -154,6 +157,7 @@ kotti_ai_community.ai_assistant_enabled = true
 | `/@@edit-profile` | Edit profile | Edit |
 | `/@@notifications` | Notifications | View |
 | `/@@ai-assistant` | AI assistant | View |
+| `/@@search` | Full-text search | View |
 
 ### Creating Content
 
@@ -314,6 +318,60 @@ Response:
 }
 ```
 
+### Search API
+
+#### Search Content
+
+```
+GET /@@search?q=ai&type=all&page=1
+```
+
+Parameters:
+- `q` (required): Search query (minimum 2 characters)
+- `type` (optional): Content type filter (`all`, `ideas`, `resources`, `projects`)
+- `page` (optional): Page number (default: 1)
+
+Response:
+```json
+{
+  "query": "ai",
+  "content_type": "all",
+  "results": [
+    {
+      "type": "idea",
+      "title": "AI-Powered Code Review",
+      "description": "Build an AI assistant...",
+      "tags": ["AI", "automation"],
+      "url": "/ideas/1"
+    }
+  ],
+  "total_count": 15,
+  "pagination": {
+    "page": 1,
+    "pages": 1
+  }
+}
+```
+
+#### Search API (JSON)
+
+```
+GET /@@search_api?q=ai&limit=10
+```
+
+Response:
+```json
+{
+  "results": [
+    {
+      "type": "idea",
+      "title": "AI-Powered Code Review",
+      "url": "/ideas/1"
+    }
+  ]
+}
+```
+
 ## Gamification System
 
 ### Points
@@ -444,6 +502,7 @@ kotti_ai_community/
 ├── resources.py             # SQLAlchemy models
 ├── user_profile.py          # User profile model
 ├── notification.py          # Notification system
+├── moderation.py            # Content moderation
 ├── utils.py                 # Utility functions
 ├── views/
 │   ├── __init__.py
@@ -453,20 +512,27 @@ kotti_ai_community/
 │   ├── project.py           # Project views
 │   ├── user.py              # User views, badges
 │   ├── notification.py      # Notification views
-│   └── practice_log.py      # Practice log views
+│   ├── practice_log.py      # Practice log views
+│   ├── moderation.py        # Moderation views
+│   ├── search.py            # Full-text search
+│   ├── ai_assistant.py      # AI assistant
+│   └── match.py             # Tag matching
 ├── templates/
 │   ├── home.pt
 │   ├── idea_*.pt
 │   ├── resource_*.pt
 │   ├── project_*.pt
 │   ├── user_*.pt
+│   ├── search.pt
 │   └── ...
 ├── alembic/
 │   └── versions/            # Database migrations
 └── tests/
     ├── test_utils.py
     ├── test_user_profile.py
-    └── test_csrf.py
+    ├── test_csrf.py
+    ├── test_moderation.py
+    └── test_search.py
 ```
 
 ### Creating a Migration

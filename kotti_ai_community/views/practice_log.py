@@ -64,15 +64,19 @@ class PracticeLogViews:
             raise HTTPForbidden()
 
         if self.request.method == "POST":
-            self.context.title = truncate_string(self.request.params.get("title", self.context.title), 200)
+            # Validate CSRF token
+            if not validate_csrf_token(self.request):
+                raise HTTPForbidden("Invalid CSRF token")
+
+            self.context.title = truncate_string(self.request.params.get("title", ""), 200)
             self.context.content = self.request.params.get("content", "")
             self.context.log_type = self.request.params.get("log_type", "progress")
             self.context.visibility = self.request.params.get("visibility", "public")
             self.context.time_spent = safe_int(self.request.params.get("time_spent"), 0)
 
-            # Parse tags
+            # Parse tags (limit to 10 tags, each max 50 chars)
             tags_str = self.request.params.get("tags", "")
-            self.context.tags = [t.strip() for t in tags_str.split(",") if t.strip()]
+            self.context.tags = [t.strip()[:50] for t in tags_str.split(",") if t.strip()][:10]
 
             return HTTPFound(location=self.request.resource_url(self.context))
 

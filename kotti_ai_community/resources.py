@@ -14,6 +14,7 @@ from sqlalchemy import String
 from sqlalchemy import Text
 from sqlalchemy import Unicode
 from sqlalchemy import UnicodeText
+from sqlalchemy import UniqueConstraint
 from sqlalchemy.orm import relationship
 
 from kotti import Base
@@ -106,9 +107,6 @@ class Idea(Content):
     #: 标签 (JSON 数组)
     tags = Column(JsonType, default=list)
 
-    #: 详细描述
-    description = Column(UnicodeText())
-
     #: 需要的资源描述
     needed_resources = Column(UnicodeText())
 
@@ -187,9 +185,6 @@ class ResourceItem(Content):
 
     #: 标签 (JSON 数组)
     tags = Column(JsonType, default=list)
-
-    #: 详细描述
-    description = Column(UnicodeText())
 
     #: 资源链接
     url = Column(Unicode(500))
@@ -274,6 +269,9 @@ class ProjectMember(Base):
     """Project team member association."""
 
     __tablename__ = "project_members"
+    __table_args__ = (
+        UniqueConstraint("project_id", "user_id", name="uq_project_member"),
+    )
 
     id = Column(Integer, primary_key=True)
     project_id = Column(Integer, ForeignKey("projects.id"), nullable=False)
@@ -310,9 +308,6 @@ class Project(Content):
 
     #: Source idea (optional)
     idea_id = Column(Integer, ForeignKey("ideas.id"), nullable=True)
-
-    #: Project description
-    description = Column(UnicodeText())
 
     #: Status
     status = Column(String(50), default="planning")

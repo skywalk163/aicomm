@@ -120,27 +120,31 @@ def edit_profile(context, request):
     message_type = "info"
 
     if request.method == "POST":
-        # Update profile
-        profile.display_name = request.params.get("display_name", "")
-        profile.bio = request.params.get("bio", "")
-        profile.location = request.params.get("location", "")
-        profile.website = request.params.get("website", "")
-        profile.avatar_url = request.params.get("avatar_url", "")
+        # Validate CSRF token
+        if not validate_csrf_token(request):
+            raise HTTPForbidden("Invalid CSRF token")
 
-        # Parse skills (comma-separated)
+        # Update profile with validation
+        profile.display_name = truncate_string(request.params.get("display_name", ""), 100)
+        profile.bio = request.params.get("bio", "")[:2000]
+        profile.location = truncate_string(request.params.get("location", ""), 100)
+        profile.website = safe_url(request.params.get("website", ""))
+        profile.avatar_url = safe_url(request.params.get("avatar_url", ""))
+
+        # Parse skills (comma-separated, max 20, each max 50 chars)
         skills_str = request.params.get("skills", "")
-        profile.skills = [s.strip() for s in skills_str.split(",") if s.strip()]
+        profile.skills = [s.strip()[:50] for s in skills_str.split(",") if s.strip()][:20]
 
-        # Parse interests (comma-separated)
+        # Parse interests (comma-separated, max 20, each max 50 chars)
         interests_str = request.params.get("interests", "")
-        profile.interests = [i.strip() for i in interests_str.split(",") if i.strip()]
+        profile.interests = [i.strip()[:50] for i in interests_str.split(",") if i.strip()][:20]
 
-        # Parse social links
+        # Parse social links with validation
         profile.social_links = {
-            "github": request.params.get("github", ""),
-            "twitter": request.params.get("twitter", ""),
-            "linkedin": request.params.get("linkedin", ""),
-            "wechat": request.params.get("wechat", ""),
+            "github": sanitize_social_link("github", request.params.get("github", "")),
+            "twitter": sanitize_social_link("twitter", request.params.get("twitter", "")),
+            "linkedin": sanitize_social_link("linkedin", request.params.get("linkedin", "")),
+            "wechat": request.params.get("wechat", "")[:50] if request.params.get("wechat", "") else "",
         }
 
         # Update principal title if display_name is set

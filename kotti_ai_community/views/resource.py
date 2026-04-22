@@ -52,18 +52,22 @@ class ResourceItemViews:
             raise HTTPForbidden()
 
         if self.request.method == "POST":
+            # Validate CSRF token
+            if not validate_csrf_token(self.request):
+                raise HTTPForbidden("Invalid CSRF token")
+
             # Update resource
-            self.context.title = self.request.params.get("title", self.context.title)
-            self.context.description = self.request.params.get("description", self.context.description)
+            self.context.title = truncate_string(self.request.params.get("title", ""), 200)
+            self.context.description = self.request.params.get("description", "")
             self.context.category = self.request.params.get("category", self.context.category)
             self.context.access_type = self.request.params.get("access_type", self.context.access_type)
-            self.context.url = self.request.params.get("url", self.context.url)
+            self.context.url = self.request.params.get("url", "")
             self.context.usage_guide = self.request.params.get("usage_guide", "")
             self.context.limitations = self.request.params.get("limitations", "")
 
-            # Parse tags
+            # Parse tags (limit to 10 tags, each max 50 chars)
             tags_str = self.request.params.get("tags", "")
-            self.context.tags = [t.strip() for t in tags_str.split(",") if t.strip()]
+            self.context.tags = [t.strip()[:50] for t in tags_str.split(",") if t.strip()][:10]
 
             return HTTPFound(location=self.request.resource_url(self.context))
 

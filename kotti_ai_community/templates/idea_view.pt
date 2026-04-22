@@ -2,9 +2,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:tal="http://xml.zope.org/namespaces/tal"
       xmlns:metal="http://xml.zope.org/namespaces/metal"
-      metal:use-macro="api.macro('kotti:templates/master.pt')">
+      metal:use-macro="api.macro('kotti:templates/view/master.pt')">
 <head>
-    <title metal:fill-slot="title">${context.title} - AI共创</title>
+    <title metal:fill-slot="title">${context/title} - AI Community</title>
 </head>
 <body>
     <div metal:fill-slot="content" class="idea-view-page">

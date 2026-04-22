@@ -63,17 +63,17 @@
                 <h2 style="margin: 0 0 16px 0; color: #333;">Links</h2>
                 <div style="display: flex; gap: 16px; flex-wrap: wrap;">
                     <tal:block tal:condition="context/repo_url">
-                        <a tal:attributes="href context/repo_url" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; background: #24292e; color: white; padding: 10px 16px; border-radius: 8px; text-decoration: none;">
+                        <a tal:attributes="href context/repo_url" target="_blank" rel="noopener noreferrer" style="display: inline-flex; align-items: center; gap: 8px; background: #24292e; color: white; padding: 10px 16px; border-radius: 8px; text-decoration: none;">
                             &#128187; Repository
                         </a>
                     </tal:block>
                     <tal:block tal:condition="context/demo_url">
-                        <a tal:attributes="href context/demo_url" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; background: #28a745; color: white; padding: 10px 16px; border-radius: 8px; text-decoration: none;">
+                        <a tal:attributes="href context/demo_url" target="_blank" rel="noopener noreferrer" style="display: inline-flex; align-items: center; gap: 8px; background: #28a745; color: white; padding: 10px 16px; border-radius: 8px; text-decoration: none;">
                             &#127912; Live Demo
                         </a>
                     </tal:block>
                     <tal:block tal:condition="context/doc_url">
-                        <a tal:attributes="href context/doc_url" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; background: #0366d6; color: white; padding: 10px 16px; border-radius: 8px; text-decoration: none;">
+                        <a tal:attributes="href context/doc_url" target="_blank" rel="noopener noreferrer" style="display: inline-flex; align-items: center; gap: 8px; background: #0366d6; color: white; padding: 10px 16px; border-radius: 8px; text-decoration: none;">
                             &#128196; Documentation
                         </a>
                     </tal:block>

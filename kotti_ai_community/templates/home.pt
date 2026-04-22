@@ -15,6 +15,12 @@
                 <p class="hero-description">
                     Share your AI ideas, find like-minded partners
                 </p>
+                <div class="hero-search">
+                    <form action="${request.application_url}/@@search" method="get" class="search-form-inline">
+                        <input type="text" name="q" placeholder="Search ideas, resources, projects..." class="search-input-hero" />
+                        <button type="submit" class="search-btn-hero">Search</button>
+                    </form>
+                </div>
                 <div class="hero-actions">
                     <a href="${request.application_url}/@@ideas" class="btn btn-primary btn-lg">
                         Browse Ideas
@@ -175,6 +181,36 @@
         .home-page .hero-subtitle {
             font-size: 24px;
             margin-bottom: 20px;
+        }
+        .home-page .hero-search {
+            margin: 30px 0;
+        }
+        .home-page .search-form-inline {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .home-page .search-input-hero {
+            flex: 1;
+            padding: 15px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            min-width: 300px;
+        }
+        .home-page .search-btn-hero {
+            padding: 15px 30px;
+            font-size: 16px;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .home-page .search-btn-hero:hover {
+            background: #34495e;
         }
         .home-page .hero-actions .btn {
             margin: 0 10px;
