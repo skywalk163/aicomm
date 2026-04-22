@@ -56,7 +56,7 @@ setup(
     ],
     author="AI共创社区",
     author_email="ai-community@example.com",
-    url="https://github.com/kotti-ai-community",
+    url="https://github.com/skywalk163/aicomm",
     keywords="kotti ai community collaboration ideas resources",
     license="MIT",
     packages=find_packages(),
