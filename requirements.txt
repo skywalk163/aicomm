@@ -1,7 +1,7 @@
 # Dependencies from GitHub (Python 3.12 compatible)
 # Install from skywalk163/kotti_py312 repository subdirectories
 
-git+https://github.com/skywalk163/kotti_py312.git#subdirectory=kotti
+git+https://github.com/skywalk163/kotti_py312.git#subdirectory=Kotti
 git+https://github.com/skywalk163/kotti_py312.git#subdirectory=kotti_g4f
 git+https://github.com/skywalk163/kotti_py312.git#subdirectory=kotti_image
 git+https://github.com/skywalk163/kotti_py312.git#subdirectory=kotti_tinymce
