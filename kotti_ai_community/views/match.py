@@ -4,7 +4,6 @@ Tag matching and search functionality
 """
 
 from pyramid.view import view_config
-from pyramid.response import Response
 
 from kotti import DBSession
 from kotti.interfaces import IContent
@@ -173,14 +172,14 @@ def api_popular_tags(context, request):
         tag_counts = {}
         
         # 从点子收集
-        ideas = session.query(Idea).filter(Idea.tags != None).all()
+        ideas = session.query(Idea).filter(Idea.tags.is_not(None)).all()
         for idea in ideas:
             if idea.tags:
                 for tag in idea.tags:
                     tag_counts[tag] = tag_counts.get(tag, 0) + 1
         
         # 从资源收集
-        resources = session.query(ResourceItem).filter(ResourceItem.tags != None).all()
+        resources = session.query(ResourceItem).filter(ResourceItem.tags.is_not(None)).all()
         for resource in resources:
             if resource.tags:
                 for tag in resource.tags:
@@ -209,13 +208,13 @@ def match_page(context, request):
     
     # 获取热门标签
     tag_counts = {}
-    ideas = session.query(Idea).filter(Idea.tags != None).all()
+    ideas = session.query(Idea).filter(Idea.tags.is_not(None)).all()
     for idea in ideas:
         if idea.tags:
             for tag in idea.tags:
                 tag_counts[tag] = tag_counts.get(tag, 0) + 1
     
-    resources = session.query(ResourceItem).filter(ResourceItem.tags != None).all()
+    resources = session.query(ResourceItem).filter(ResourceItem.tags.is_not(None)).all()
     for resource in resources:
         if resource.tags:
             for tag in resource.tags:

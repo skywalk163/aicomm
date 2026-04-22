@@ -11,17 +11,13 @@ from sqlalchemy import Column
 from sqlalchemy import ForeignKey
 from sqlalchemy import Integer
 from sqlalchemy import String
-from sqlalchemy import Text
 from sqlalchemy import Unicode
 from sqlalchemy import UnicodeText
 from sqlalchemy import UniqueConstraint
-from sqlalchemy.orm import relationship
 
 from kotti import Base
 from kotti.interfaces import IContent
-from kotti.interfaces import IDocument
 from kotti.resources import Content
-from kotti.resources import File
 from kotti.sqla import JsonType
 from kotti.util import _
 from zope.interface import implementer

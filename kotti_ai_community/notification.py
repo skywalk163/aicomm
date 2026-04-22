@@ -142,7 +142,7 @@ def get_unread_count(user_id):
     session = DBSession()
     return session.query(Notification).filter(
         Notification.user_id == user_id,
-        Notification.is_read == False
+        Notification.is_read.is_(False)
     ).count()
 
 
@@ -154,7 +154,7 @@ def get_notifications(user_id, limit=20, unread_only=False):
     )
 
     if unread_only:
-        query = query.filter(Notification.is_read == False)
+        query = query.filter(Notification.is_read.is_(False))
 
     query = query.order_by(Notification.created.desc())
     return query.limit(limit).all()
@@ -179,7 +179,7 @@ def mark_all_as_read(user_id):
     session = DBSession()
     session.query(Notification).filter(
         Notification.user_id == user_id,
-        Notification.is_read == False
+        Notification.is_read.is_(False)
     ).update({"is_read": True})
     return True
 
@@ -191,7 +191,7 @@ def notify_project_members(project_id, notification_type, exclude_user_id=None, 
     session = DBSession()
     members = session.query(ProjectMember).filter(
         ProjectMember.project_id == project_id,
-        ProjectMember.is_active == True
+        ProjectMember.is_active.is_(True)
     ).all()
 
     for member in members:

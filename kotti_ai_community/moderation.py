@@ -9,10 +9,8 @@ from sqlalchemy import Column
 from sqlalchemy import ForeignKey
 from sqlalchemy import Integer
 from sqlalchemy import String
-from sqlalchemy import Unicode
 from sqlalchemy import UnicodeText
 from sqlalchemy import DateTime
-from sqlalchemy import Boolean
 from sqlalchemy import func
 
 from kotti import Base

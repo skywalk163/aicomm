@@ -1,11 +1,8 @@
 # -*- coding: utf-8 -*-
 """Full-text search view for ideas, resources, and projects."""
 
-import math
 from pyramid.view import view_config
-from pyramid.response import Response
 from sqlalchemy import or_
-from sqlalchemy.sql import func
 
 from kotti import DBSession
 from kotti_ai_community.resources import Idea, ResourceItem, Project

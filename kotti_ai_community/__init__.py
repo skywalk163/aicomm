@@ -6,10 +6,18 @@ AI共创社区插件
 """
 
 from kotti_ai_community.resources import Idea
-from kotti_ai_community.resources import ResourceItem
 from kotti_ai_community.resources import Project
 from kotti_ai_community.resources import PracticeLog
+from kotti_ai_community.resources import ResourceItem
 from kotti_ai_community import user_profile
+
+__all__ = [
+    "Idea",
+    "ResourceItem", 
+    "Project",
+    "PracticeLog",
+    "user_profile",
+]
 
 
 def kotti_configure(settings):

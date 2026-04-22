@@ -6,11 +6,9 @@ Notification views for AI Community
 from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPFound
 
-from kotti import DBSession
 from kotti.interfaces import IContent
 from kotti.views.util import template_api
 
-from kotti_ai_community.notification import Notification
 from kotti_ai_community.notification import get_unread_count
 from kotti_ai_community.notification import get_notifications
 from kotti_ai_community.notification import mark_as_read
@@ -33,8 +31,6 @@ def notification_list(context, request):
     user = request.user
     if user is None:
         return HTTPFound(location=request.application_url + "/@@login")
-
-    session = DBSession()
 
     # Handle mark all as read
     if request.params.get("mark_all_read") == "1":

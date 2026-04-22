@@ -39,7 +39,8 @@ jobs:
           # Stop the build if there are Python syntax errors or undefined names
           flake8 kotti_ai_community --count --select=E9,F63,F7,F82 --show-source --statistics
           # Exit-zero treats all errors as warnings
-          flake8 kotti_ai_community --count --exit-zero --max-complexity=10 --max-line-length=100 --statistics
+          # Ignore migrations (auto-generated), extend line length to 100
+          flake8 kotti_ai_community --count --exit-zero --max-complexity=10 --max-line-length=100 --exclude="*/alembic/*,*/tests/*" --ignore=E501,W503,F401 --statistics
 
   security:
     runs-on: ubuntu-latest

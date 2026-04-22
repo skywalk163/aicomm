@@ -3,12 +3,10 @@
 User profile views for AI Community
 """
 
-from datetime import datetime
-
 from pyramid.view import view_config
-from pyramid.view import view_defaults
 from pyramid.httpexceptions import HTTPFound
 from pyramid.httpexceptions import HTTPNotFound
+from pyramid.httpexceptions import HTTPForbidden
 
 from kotti import DBSession
 from kotti.interfaces import IContent
@@ -17,12 +15,17 @@ from kotti.views.util import template_api
 
 from kotti_ai_community.user_profile import UserProfile
 from kotti_ai_community.user_profile import get_profile
-from kotti_ai_community.user_profile import get_profile_by_name
-from kotti_ai_community.user_profile import update_stats
 from kotti_ai_community.user_profile import SKILL_CATEGORIES
 from kotti_ai_community.resources import Idea
 from kotti_ai_community.resources import ResourceItem
-from kotti_ai_community.utils import safe_url, sanitize_social_link, safe_int, is_admin
+from kotti_ai_community.utils import (
+    safe_url,
+    sanitize_social_link,
+    safe_int,
+    is_admin,
+    truncate_string,
+    validate_csrf_token,
+)
 
 
 # ============================================================================
@@ -188,13 +191,13 @@ def user_list(context, request):
     from kotti.security import Principal
     query = session.query(UserProfile, Principal).join(
         Principal, UserProfile.user_id == Principal.id
-    ).filter(Principal.active == True)
+    ).filter(Principal.active.is_(True))
 
     if search:
         query = query.filter(
-            (Principal.name.contains(search)) |
-            (Principal.title.contains(search)) |
-            (UserProfile.bio.contains(search))
+            (Principal.name.contains(search))
+            | (Principal.title.contains(search))
+            | (UserProfile.bio.contains(search))
         )
 
     if skill_filter:
@@ -320,7 +323,7 @@ def leaderboard(context, request):
     # Base query - join UserProfile with Principal
     query = session.query(UserProfile, Principal).join(
         Principal, UserProfile.user_id == Principal.id
-    ).filter(Principal.active == True)
+    ).filter(Principal.active.is_(True))
 
     # Filter by time period
     if period == "week":
@@ -403,7 +406,7 @@ def check_and_award_badges(user_id):
     projects_created = session.query(Project).filter(Project.owner_id == user_id).count()
     projects_joined = session.query(ProjectMember).filter(
         ProjectMember.user_id == user_id,
-        ProjectMember.is_active == True
+        ProjectMember.is_active.is_(True)
     ).count()
 
     # First idea

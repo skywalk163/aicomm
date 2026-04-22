@@ -8,12 +8,9 @@ import time
 from pyramid.view import view_config
 from pyramid.view import view_defaults
 from pyramid.httpexceptions import HTTPFound
-from pyramid.httpexceptions import HTTPNotFound
 from pyramid.httpexceptions import HTTPForbidden
 
 from kotti import DBSession
-from kotti.interfaces import IContent
-from kotti.security import get_principals
 from kotti.views.util import template_api
 
 from kotti_ai_community.resources import Project
@@ -23,7 +20,7 @@ from kotti_ai_community.resources import LOG_TYPES
 from kotti_ai_community.resources import LOG_VISIBILITY
 from kotti_ai_community.resources import MILESTONE_STATUS
 from kotti_ai_community.user_profile import get_profile
-from kotti_ai_community.utils import safe_int, truncate_string, can_edit, is_admin
+from kotti_ai_community.utils import safe_int, truncate_string, validate_csrf_token
 
 
 # ============================================================================
@@ -57,7 +54,6 @@ class PracticeLogViews:
     def edit(self):
         """Edit practice log."""
         user = self.request.user
-        session = DBSession()
 
         # Check permission
         if not user or (user.id != self.context.owner_id and "role:admin" not in user.groups):

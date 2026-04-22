@@ -6,7 +6,6 @@ Content moderation views for AI Community
 from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPFound
 from pyramid.httpexceptions import HTTPForbidden
-from pyramid.httpexceptions import HTTPNotFound
 
 from kotti import DBSession
 from kotti.interfaces import IContent

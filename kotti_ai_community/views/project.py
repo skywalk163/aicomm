@@ -3,17 +3,13 @@
 Project views for AI Community
 """
 
-import time
-
 from pyramid.view import view_config
 from pyramid.view import view_defaults
 from pyramid.httpexceptions import HTTPFound
-from pyramid.httpexceptions import HTTPNotFound
 from pyramid.httpexceptions import HTTPForbidden
 
 from kotti import DBSession
 from kotti.interfaces import IContent
-from kotti.security import get_principals
 from kotti.views.util import template_api
 
 from kotti_ai_community.resources import Project
@@ -26,8 +22,12 @@ from kotti_ai_community.user_profile import get_profile
 from kotti_ai_community.user_profile import update_stats
 from kotti_ai_community.views.user import check_and_award_badges
 from kotti_ai_community.notification import create_notification
-from kotti_ai_community.notification import notify_project_members
-from kotti_ai_community.utils import safe_int, truncate_string, can_edit, is_admin, validate_csrf_token, Pagination
+from kotti_ai_community.utils import (
+    safe_int,
+    truncate_string,
+    validate_csrf_token,
+    Pagination,
+)
 
 
 # ============================================================================

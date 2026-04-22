@@ -4,13 +4,9 @@ AI Assistant views
 """
 
 from pyramid.view import view_config
-from pyramid.response import Response
-from pyramid.view import view_defaults
 
 from kotti.interfaces import IContent
 from kotti.views.util import template_api
-
-import json
 
 
 @view_config(
