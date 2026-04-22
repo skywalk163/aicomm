@@ -1,7 +1,7 @@
 # Kotti AI Community
 
-[![Tests](https://github.com/skywalk163/kotti_ai_community/actions/workflows/test.yml/badge.svg)](https://github.com/YOUR_USERNAME/kotti_ai_community/actions/workflows/test.yml)
-[![Lint](https://github.com/skywalk163/kotti_ai_community/actions/workflows/lint.yml/badge.svg)](https://github.com/YOUR_USERNAME/kotti_ai_community/actions/workflows/lint.yml)
+[![Tests](https://github.com/skywalk163/kotti_ai_community/actions/workflows/test.yml/badge.svg)](https://github.com/skywalk163/kotti_ai_community/actions/workflows/test.yml)
+[![Lint](https://github.com/skywalk163/kotti_ai_community/actions/workflows/lint.yml/badge.svg)](https://github.com/skywalk163/kotti_ai_community/actions/workflows/lint.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 
