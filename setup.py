@@ -5,19 +5,25 @@ from setuptools import setup
 
 here = os.path.abspath(os.path.dirname(__file__))
 try:
-    README = open(os.path.join(here, "README.rst"), encoding="utf-8").read()
+    README = open(os.path.join(here, "README.md"), encoding="utf-8").read()
 except IOError:
     README = ""
 try:
-    CHANGES = open(os.path.join(here, "CHANGES.rst"), encoding="utf-8").read()
+    CHANGES = open(os.path.join(here, "CHANGES.md"), encoding="utf-8").read()
 except IOError:
     CHANGES = ""
 
 version = "0.1.0"
 
+# Dependencies are installed from GitHub via requirements.txt
+# See: https://github.com/skywalk163/kotti_py312
 install_requires = [
-    "Kotti>=2.0.0,<3.0.0",
-    "kotti_g4f>=0.1.0,<1.0.0",  # AI 助手集成
+    # Core dependencies (installed from GitHub subdirectories)
+    # Use: pip install -r requirements.txt
+    "Kotti",
+    "kotti_g4f",
+    "kotti_image",
+    "kotti_tinymce",
 ]
 
 tests_require = [

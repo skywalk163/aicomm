@@ -47,9 +47,9 @@ A comprehensive AI community plugin for [Kotti CMS](https://github.com/Kotti/Kot
 
 ## Requirements
 
-- Python 3.10 or higher
-- Kotti CMS 3.0+
-- SQLAlchemy 1.4+ or 2.0+
+- Python 3.12
+- Kotti CMS (Python 3.12 compatible version from [kotti_py312](https://github.com/skywalk163/kotti_py312))
+- SQLAlchemy 2.0+
 - PostgreSQL or SQLite
 
 ## Installation
@@ -67,9 +67,14 @@ source .venv/bin/activate  # Linux/macOS
 # or
 .venv\Scripts\activate  # Windows
 
-# Install dependencies
+# Install dependencies (from GitHub subdirectories)
+pip install -r requirements.txt
+
+# Install the package
 pip install -e .
 ```
+
+> **Note:** This project requires Python 3.12 compatible versions of Kotti and plugins, which are installed from the [kotti_py312](https://github.com/skywalk163/kotti_py312) repository.
 
 ### 2. Add to Kotti Configuration
 
