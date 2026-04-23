@@ -16,14 +16,14 @@ except IOError:
 version = "0.1.0"
 
 # Dependencies are installed from GitHub via requirements.txt
+# PyPI package names: Kotti2, kotti2_g4f, kotti2_image, kotti2_tinymce
+# Python module names: kotti, kotti_g4f, kotti_image, kotti_tinymce (unchanged)
 # See: https://github.com/skywalk163/kotti_py312
 install_requires = [
-    # Core dependencies (installed from GitHub subdirectories)
-    # Use: pip install -r requirements.txt
-    "Kotti",
-    "kotti_g4f",
-    "kotti_image",
-    "kotti_tinymce",
+    "Kotti2",
+    "kotti2_g4f",
+    "kotti2_image",
+    "kotti2_tinymce",
 ]
 
 tests_require = [
